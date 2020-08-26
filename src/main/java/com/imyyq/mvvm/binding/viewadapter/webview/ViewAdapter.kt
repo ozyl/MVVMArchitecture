@@ -7,6 +7,6 @@ import androidx.databinding.BindingAdapter
 @BindingAdapter("render")
 fun loadHtml(webView: WebView, html: String?) {
     if (!TextUtils.isEmpty(html)) {
-        webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+        webView.loadDataWithBaseURL(null, html!!, "text/html", "UTF-8", null)
     }
 }

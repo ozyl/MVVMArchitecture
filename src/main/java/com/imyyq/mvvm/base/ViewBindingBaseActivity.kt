@@ -4,19 +4,28 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
 import androidx.collection.ArrayMap
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableField
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.imyyq.mvvm.BR
+import com.imyyq.mvvm.R
 import com.imyyq.mvvm.bus.LiveDataBus
+import com.imyyq.mvvm.data.ToolbarConfig
+import com.imyyq.mvvm.utils.ToastUtil
 import com.imyyq.mvvm.utils.Utils
 import com.imyyq.mvvm.widget.CustomLayoutDialog
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
+import kotlinx.android.synthetic.main.mvvm_title.view.*
 
 /**
  * 通过构造函数和泛型，完成 view 的初始化和 vm 的初始化，并且将它们绑定，
@@ -27,6 +36,9 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     protected lateinit var mBinding: V
     protected lateinit var mViewModel: VM
+    protected lateinit var titleBinding: ViewDataBinding
+    protected lateinit var titleConfig: ToolbarConfig
+
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
@@ -37,8 +49,15 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mBinding = initBinding(layoutInflater, null)
+        if (titleConfig()!=null){
+            titleBinding = DataBindingUtil.inflate(layoutInflater, R.layout.mvvm_title, null, false)
+            titleBinding.setVariable(BR.toolbarConfig,titleConfig)
+            mBinding = initBinding(layoutInflater, titleBinding.root.contentView.contentView)
+            setContentView(titleBinding.root)
+        }else{
+            mBinding = initBinding(layoutInflater, null)
+            setContentView(mBinding.root)
+        }
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
@@ -49,9 +68,10 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     abstract override fun initBinding(inflater: LayoutInflater, container: ViewGroup?): V
 
+    open fun titleConfig():ToolbarConfig? = null
+
     @CallSuper
     override fun initViewAndViewModel() {
-        setContentView(mBinding.root)
         mViewModel = initViewModel(this)
         mViewModel.mIntent = getArgumentsIntent()
         // 让 vm 可以感知 v 的生命周期

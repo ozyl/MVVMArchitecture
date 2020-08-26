@@ -12,7 +12,7 @@ abstract class DataBindingBaseActivity<V : ViewDataBinding, VM : BaseViewModel<o
 ) : ViewBindingBaseActivity<V, VM>() {
 
     final override fun initBinding(inflater: LayoutInflater, container: ViewGroup?): V =
-        DataBindingUtil.inflate(inflater, layoutId, container, false)
+        DataBindingUtil.inflate(inflater, layoutId, container, container !=null)
 
     final override fun initViewAndViewModel() {
         super.initViewAndViewModel()
