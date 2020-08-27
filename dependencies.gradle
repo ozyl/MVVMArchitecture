@@ -106,6 +106,7 @@ ext {
             workKTX                   : "androidx.work:work-runtime-ktx:2.4.0",
             paletteKTX                : "androidx.palette:palette-ktx:1.0.0",
             collectionKTX             : "androidx.collection:collection-ktx:1.1.0",
+            bgaSwipebackLayout          :'cn.bingoogolapple:bga-swipebacklayout:2.0.1@aar'
     ]
 
     Hilt = [

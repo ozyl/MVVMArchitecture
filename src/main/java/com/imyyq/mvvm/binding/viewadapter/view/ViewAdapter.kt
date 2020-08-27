@@ -12,14 +12,18 @@ import com.imyyq.mvvm.utils.LogUtil
 )
 fun onClickCommand(
     view: View,
-    clickCommand: View.OnClickListener,
+    clickCommand: View.OnClickListener?,
     // xml中没有配置，那么使用全局的配置
-    isInterval: Boolean = GlobalConfig.Click.gIsClickInterval,
+    isInterval: Boolean?,
     // 没有配置时间，使用全局配置
-    intervalMilliseconds: Int = GlobalConfig.Click.gClickIntervalMilliseconds
+    intervalMilliseconds: Int?
 ) {
-    if (isInterval) {
-        view.clickWithTrigger(intervalMilliseconds.toLong(), clickCommand)
+    clickCommand ?: return
+    if (isInterval ?: GlobalConfig.Click.gIsClickInterval) {
+        view.clickWithTrigger(
+            (intervalMilliseconds ?: GlobalConfig.Click.gClickIntervalMilliseconds).toLong(),
+            clickCommand
+        )
     } else {
         view.setOnClickListener(clickCommand)
     }

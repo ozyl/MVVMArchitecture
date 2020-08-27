@@ -4,60 +4,47 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
+import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArrayMap
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
-import com.imyyq.mvvm.BR
 import com.imyyq.mvvm.R
 import com.imyyq.mvvm.bus.LiveDataBus
-import com.imyyq.mvvm.data.ToolbarConfig
-import com.imyyq.mvvm.utils.ToastUtil
 import com.imyyq.mvvm.utils.Utils
 import com.imyyq.mvvm.widget.CustomLayoutDialog
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
-import kotlinx.android.synthetic.main.mvvm_title.view.*
 
 /**
  * 通过构造函数和泛型，完成 view 的初始化和 vm 的初始化，并且将它们绑定，
  */
-abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out BaseModel>> :
-    ParallaxSwipeBackActivity(),
+abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out BaseModel>> :SwipeBackActivity(),
     IView<V, VM>, ILoadingDialog, ILoading, IActivityResult, IArgumentsFromIntent {
 
     protected lateinit var mBinding: V
     protected lateinit var mViewModel: VM
-    protected lateinit var titleBinding: ViewDataBinding
-    protected lateinit var titleConfig: ToolbarConfig
 
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
     // 保证只有主线程访问这个变量，所以 lazy 不需要同步机制
-    private val mLoadingDialog by lazy(mode = LazyThreadSafetyMode.NONE) { CustomLayoutDialog(this, loadingDialogLayout()) }
+    private val mLoadingDialog by lazy(mode = LazyThreadSafetyMode.NONE) {
+        CustomLayoutDialog(
+            this,
+            loadingDialogLayout()
+        )
+    }
 
     private lateinit var mLoadService: LoadService<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (titleConfig()!=null){
-            titleBinding = DataBindingUtil.inflate(layoutInflater, R.layout.mvvm_title, null, false)
-            titleBinding.setVariable(BR.toolbarConfig,titleConfig)
-            mBinding = initBinding(layoutInflater, titleBinding.root.contentView.contentView)
-            setContentView(titleBinding.root)
-        }else{
-            mBinding = initBinding(layoutInflater, null)
-            setContentView(mBinding.root)
-        }
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
@@ -68,15 +55,18 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     abstract override fun initBinding(inflater: LayoutInflater, container: ViewGroup?): V
 
-    open fun titleConfig():ToolbarConfig? = null
-
     @CallSuper
     override fun initViewAndViewModel() {
+        mBinding = initBinding(layoutInflater,null)
+        setContentView(contentView())
         mViewModel = initViewModel(this)
         mViewModel.mIntent = getArgumentsIntent()
         // 让 vm 可以感知 v 的生命周期
         lifecycle.addObserver(mViewModel)
     }
+
+
+    open fun contentView() = mBinding.root
 
     @CallSuper
     override fun initUiChangeLiveData() {
@@ -119,7 +109,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 },
                 true
             )
-            LiveDataBus.observe<Pair<Class<out Activity>, ArrayMap<String, *>>>(this,
+            LiveDataBus.observe<Pair<Class<out Activity>, ArrayMap<String, *>>>(
+                this,
                 mViewModel.mUiChangeLiveData.startActivityWithMapEvent!!,
                 Observer {
                     startActivity(it?.first, it?.second)
@@ -127,7 +118,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 true
             )
             // vm 可以启动界面，并携带 Bundle，接收方可调用 getBundle 获取
-            LiveDataBus.observe<Pair<Class<out Activity>, Bundle?>>(this,
+            LiveDataBus.observe<Pair<Class<out Activity>, Bundle?>>(
+                this,
                 mViewModel.mUiChangeLiveData.startActivityEventWithBundle!!,
                 Observer {
                     startActivity(it?.first, bundle = it?.second)

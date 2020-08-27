@@ -38,8 +38,10 @@ android {
         }
     }
 
+    // Gradle Plugin 4.0 及以上
     buildFeatures{
         dataBinding = true
+        viewBinding = true
     }
 
     compileOptions {
@@ -77,9 +79,7 @@ dependencies {
     api Deps.appcompat
     // 约束布局
     api Deps.constraintLayout
-    // 侧滑布局，是用来界面侧滑退出的，因为只有一个类，就不做可配置去除了
-    api Deps.slidingPaneLayout
-
+    
     // 以下三个是为了使用最新的特性
     api Deps.activity
     api Deps.activityKTX
@@ -93,6 +93,8 @@ dependencies {
     api Deps.fragmentKTX
     // 使用 Java8 替换 lifecycleCompiler，让 vm 可以感知 v 生命周期
     api Deps.lifecycleJava8
+
+    api Deps.bgaSwipebackLayout
 
     // 监控应用的生命周期
     checkMVVMConfigProperty(IncludeLib.lifecycleProcess, "lifecycleProcess")
