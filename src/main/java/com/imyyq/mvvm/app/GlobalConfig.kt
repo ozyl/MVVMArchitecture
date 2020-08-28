@@ -17,7 +17,7 @@ object GlobalConfig {
      *
      * 建议打包提测的都开启保存。比如 beta 构建选项
      */
-    var gIsSaveLog = false
+    var gIsDebug = false
 
     /**
      * activity 是否支持侧滑返回。

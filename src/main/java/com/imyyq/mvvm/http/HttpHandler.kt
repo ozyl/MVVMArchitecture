@@ -1,7 +1,8 @@
 package com.imyyq.mvvm.http
 
+import android.util.Log
+import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
-import com.imyyq.mvvm.utils.LogUtil
 import retrofit2.HttpException
 
 object HttpHandler {
@@ -16,7 +17,7 @@ object HttpHandler {
     fun <T> handleResult(
         entity: IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
-        onResult: ((t: T) -> Unit),
+        onResult: ((t: T) -> Unit)?,
         onFailed: ((code: Int, msg: String?) -> Unit)? = null
     ) {
         // 防止实体为 null
@@ -36,7 +37,7 @@ object HttpHandler {
             // 回调成功
             onSuccess?.invoke()
             // 实体不为 null 才有价值
-            entity.data()?.let { onResult.invoke(it) }
+            entity.data()?.let { onResult?.invoke(it) }
         } else {
             // 失败了
             onFailed?.invoke(code, msg)
@@ -50,13 +51,13 @@ object HttpHandler {
         e: Exception,
         onFailed: (code: Int, msg: String?) -> Unit
     ) {
-        if (LogUtil.isLog()) {
+        if (GlobalConfig.gIsDebug) {
             e.printStackTrace()
         }
         return if (e is HttpException) {
             onFailed(e.code(), e.message())
         } else {
-            val log = LogUtil.getStackTraceString(e)
+            val log = Log.getStackTraceString(e)
             onFailed(
                 notHttpException,
                 "$msgNotHttpException, 具体错误是\n${if (log.isEmpty()) e.message else log}"

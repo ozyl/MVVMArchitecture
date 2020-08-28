@@ -8,6 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.collection.ArrayMap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.viewModelScope
 import com.imyyq.mvvm.R
 import com.imyyq.mvvm.app.CheckUtil
 import com.imyyq.mvvm.app.RepositoryManager
@@ -43,7 +44,6 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
 
     private lateinit var mCompositeDisposable: Any
     private lateinit var mCallList: MutableList<Call<*>>
-    private lateinit var mCoroutineScope: CoroutineScope
 
     internal val mUiChangeLiveData by lazy { UiChangeLiveData() }
 
@@ -66,12 +66,11 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
     fun <T> launch(
         block: suspend CoroutineScope.() -> IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
-        onResult: ((t: T) -> Unit),
+        onResult: ((t: T) -> Unit)?=null,
         onFailed: ((code: Int, msg: String?) -> Unit)? = null,
         onComplete: (() -> Unit)? = null
     ) {
-        initCoroutineScope()
-        mCoroutineScope.launch {
+        viewModelScope.launch {
             try {
                 HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
             } catch (e: Exception) {
@@ -82,18 +81,12 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         }
     }
 
-    private fun initCoroutineScope() {
-        if (!this::mCoroutineScope.isInitialized) {
-            mCoroutineScope = CoroutineScope(Job() + Dispatchers.Main)
-        }
-    }
 
     /**
      * 发起协程，让协程和 UI 相关
      */
     fun launchUI(block: suspend CoroutineScope.() -> Unit) {
-        initCoroutineScope()
-        mCoroutineScope.launch { block() }
+        viewModelScope.launch { block() }
     }
 
     /**
@@ -146,9 +139,8 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
             mCallList.forEach { it.cancel() }
             mCallList.clear()
         }
-        if (this::mCoroutineScope.isInitialized) {
-            mCoroutineScope.cancel()
-        }
+        viewModelScope.cancel()
+
     }
 
     /**

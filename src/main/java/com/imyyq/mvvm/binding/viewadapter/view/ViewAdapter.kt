@@ -4,7 +4,6 @@ import android.view.View
 import androidx.databinding.BindingAdapter
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.http.HttpRequest
-import com.imyyq.mvvm.utils.LogUtil
 
 @BindingAdapter(
     value = ["onClickCommand", "isInterval", "intervalMilliseconds"],
@@ -30,16 +29,6 @@ fun onClickCommand(
 }
 
 @BindingAdapter(
-    value = ["multiClickToOpenLog"]
-)
-fun multiClickToOpenLog(
-    view: View,
-    frequency: Int
-) {
-    LogUtil.multiClickToOpenLog(view, frequency)
-}
-
-@BindingAdapter(
     value = ["multiClickToChangeBaseUrl"]
 )
 fun multiClickToChangeBaseUrl(
@@ -47,4 +36,17 @@ fun multiClickToChangeBaseUrl(
     frequency: Int
 ) {
     HttpRequest.multiClickToChangeBaseUrl(view, frequency)
+}
+
+
+/**
+ * view的显示隐藏
+ */
+@BindingAdapter(value = ["isVisible"], requireAll = false)
+fun isVisible(view: View, visibility: Boolean) {
+    if (visibility) {
+        view.visibility = View.VISIBLE
+    } else {
+        view.visibility = View.GONE
+    }
 }

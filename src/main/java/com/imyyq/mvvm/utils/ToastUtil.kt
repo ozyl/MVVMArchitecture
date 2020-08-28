@@ -75,6 +75,7 @@ object ToastUtil {
 
     private fun showToast(msg: String, duration: Int) {
         val toast = Toast.makeText(BaseApp.getInstance(), msg, duration)
+        toast.setText(msg)
         toast.setGravity(mGravity!!, xOffset!!, yOffset!!)
         toast.show()
     }

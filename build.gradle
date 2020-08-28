@@ -96,6 +96,13 @@ dependencies {
 
     api Deps.bgaSwipebackLayout
 
+    api Deps.logginginterceptor
+
+    debugApi Deps.logUtil
+    releaseApi Deps.logUtilNoOp
+    
+    api Deps.log4a
+
     // 监控应用的生命周期
     checkMVVMConfigProperty(IncludeLib.lifecycleProcess, "lifecycleProcess")
     if (IncludeLib.lifecycleProcess) {

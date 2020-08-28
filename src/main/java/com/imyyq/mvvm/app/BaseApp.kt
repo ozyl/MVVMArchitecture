@@ -3,8 +3,11 @@ package com.imyyq.mvvm.app
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import com.apkfuns.log2file.LogFileEngineFactory
+import com.apkfuns.logutils.LogUtils
 import com.imyyq.mvvm.utils.AppUtil
-import com.imyyq.mvvm.utils.LogUtil
+import com.imyyq.mvvm.utils.FileUtil
+
 
 open class BaseApp : Application() {
 
@@ -18,6 +21,19 @@ open class BaseApp : Application() {
             // 主进程初始化
             initResource(this)
             onMainProcessInit()
+
+            LogUtils.getLogConfig()
+                .configAllowLog(GlobalConfig.gIsDebug)
+                .configTagPrefix(AppUtil.appLabel)
+                .configShowBorders(true)
+                .configFormatTag("%d{HH:mm:ss:SSS} %t %c{-5}")
+
+            LogUtils.getLog2FileConfig()
+                .configLog2FileEnable(GlobalConfig.gIsDebug) // targetSdkVersion >= 23 需要确保有写sdcard权限
+                .configLog2FilePath(FileUtil.appLogDir)
+                .configLog2FileNameFormat("%d{yyyyMMdd}.txt")
+                .configLogFileEngine(LogFileEngineFactory(getInstance()))
+
         } else {
             // 其他进程初始化
             processName?.let { onOtherProcessInit(it) }
@@ -44,8 +60,6 @@ open class BaseApp : Application() {
         @JvmStatic
         fun initApp(app: Application) {
             Companion.app = app
-
-            LogUtil.init()
         }
 
         private fun initResource(app: Application) {

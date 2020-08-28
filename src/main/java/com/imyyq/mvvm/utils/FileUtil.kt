@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import com.apkfuns.logutils.LogUtils
 import com.imyyq.mvvm.app.BaseApp
 import org.json.JSONException
 import java.io.File
@@ -208,7 +209,7 @@ object FileUtil {
                 cursor.close()
             }
         } else {
-            LogUtil.e("FileUtil", "getFilePathFromUri: $uri")
+            LogUtils.e("FileUtil getFilePathFromUri: $uri")
         }
         return data
     }

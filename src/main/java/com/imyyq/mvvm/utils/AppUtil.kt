@@ -11,11 +11,11 @@ import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
+import com.apkfuns.logutils.LogUtils
 import com.imyyq.mvvm.app.BaseApp
 
 
 object AppUtil {
-    private const val TAG = "AppUtil"
 
     /**
      * 根据 view，获取其关联的 activity
@@ -110,7 +110,7 @@ object AppUtil {
                 ).toString()
             } catch (e: PackageManager.NameNotFoundException) {
                 e.printStackTrace()
-                LogUtil.e(TAG, "getDefPackageInfo: " + e.message)
+                LogUtils.e("getDefPackageInfo: " + e.message)
             }
 
             return null

@@ -1,5 +1,6 @@
 package com.imyyq.mvvm.utils
 
+import com.apkfuns.logutils.LogUtils
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -117,7 +118,7 @@ object DateUtil {
     }
 
     fun parseYMDHMS_FrontZero(source: String, field: Int, targetLen: Int): String? {
-        LogUtil.i("DateUtil", "parseYMDHMS_FrontZero: $source")
+        LogUtils.i("DateUtil parseYMDHMS_FrontZero: $source")
         try {
             val calendar = Calendar.getInstance()
             calendar.time = SimpleDateFormat(YMDHM_, Locale.getDefault()).parse(source)!!

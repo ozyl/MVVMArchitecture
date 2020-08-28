@@ -4,6 +4,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.apkfuns.logutils.LogUtils
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -20,9 +21,8 @@ class SingleLiveEvent<T> : MutableLiveData<T?>() {
         observer: Observer<in T?>
     ) {
         if (hasActiveObservers()) {
-            LogUtil.w(
-                TAG,
-                "Multiple observers registered but only one will be notified of changes."
+            LogUtils.w(
+                "$TAG Multiple observers registered but only one will be notified of changes."
             )
         }
 

@@ -4,21 +4,21 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.collection.ArrayMap
+import com.apkfuns.logutils.LogUtils
+import com.imyyq.mvvm.BuildConfig
 import com.imyyq.mvvm.R
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.interceptor.HeaderInterceptor
-import com.imyyq.mvvm.http.interceptor.logging.Level
-import com.imyyq.mvvm.http.interceptor.logging.LoggingInterceptor
 import com.imyyq.mvvm.utils.AppUtil
-import com.imyyq.mvvm.utils.LogUtil
+import com.imyyq.mvvm.utils.DateUtil
 import com.imyyq.mvvm.utils.SPUtils
 import com.imyyq.mvvm.utils.Utils
+import com.safframework.http.interceptor.LoggingInterceptor
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.internal.platform.Platform
 import retrofit2.*
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -103,27 +103,20 @@ object HttpRequest {
 
             // 日志拦截器，是否打印由 LogUtil 控制
             httpClientBuilder
-                .addInterceptor(
-                    LoggingInterceptor
-                        .Builder()
-                        // 打印的等级
-                        .setLevel(Level.BASIC)
-                        // 打印类型
-                        .log(Platform.INFO)
-                        // request 的 Tag
-                        .request("Request")
-                        // Response 的 Tag
-                        .response("Response")
-                        .build()
-                )
-
+                .addInterceptor(LoggingInterceptor.Builder()
+                    .loggable(BuildConfig.DEBUG)
+                    .request()
+                    .response()
+                    .requestTag("Request--Start:${DateUtil.formatYMDHMS_SSS()}")
+                    .responseTag("Response--End:${DateUtil.formatYMDHMS_SSS()}")
+                    //.hideVerticalLine()// 隐藏竖线边框
+                    .build())
             val client = httpClientBuilder.build()
             val builder = Retrofit.Builder().client(client)
                 // 基础url
                 .baseUrl(host)
                 // JSON解析
                 .addConverterFactory(GsonConverterFactory.create())
-
             if (GlobalConfig.gIsNeedChangeBaseUrl) {
                 if (!this::mBaseUrlMap.isInitialized) {
                     mBaseUrlMap = ArrayMap()
@@ -135,9 +128,8 @@ object HttpRequest {
                 } else {
                     mBaseUrlMap[host] = ""
                 }
-
                 builder.callFactory {
-                    LogUtil.i("HttpRequest", "getService: old ${it.url()}")
+                    LogUtils.i("HttpRequest getService: old ${it.url()}")
                     mBaseUrlMap.forEach { entry ->
                         val key = entry.key
                         var value = entry.value
@@ -155,7 +147,7 @@ object HttpRequest {
                                 it.newBuilder()
                                     .url(HttpUrl.get(url.replaceFirst(key, value)))
                                     .build()
-                            LogUtil.i("HttpRequest", "getService: new ${newRequest.url()}")
+                            LogUtils.i("HttpRequest getService: new ${newRequest.url()}")
                             return@callFactory client.newCall(newRequest)
                         }
                     }
@@ -187,6 +179,19 @@ object HttpRequest {
             return getService(cls, mDefaultBaseUrl, headers)
         }
         return getService(cls, mDefaultBaseUrl, null)
+    }
+
+
+    @JvmStatic
+    fun <T> getService(cls: Class<T>,vararg interceptors: Interceptor?):T{
+        if (!this::mDefaultBaseUrl.isInitialized) {
+            throw RuntimeException("必须初始化 mBaseUrl")
+        }
+        if (this::mDefaultHeader.isInitialized) {
+            val headers = HeaderInterceptor(mDefaultHeader)
+            return getService(cls, mDefaultBaseUrl, headers,*interceptors)
+        }
+        return getService(cls, mDefaultBaseUrl, *interceptors)
     }
 
     /**
