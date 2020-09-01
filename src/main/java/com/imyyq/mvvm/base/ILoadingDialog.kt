@@ -1,9 +1,11 @@
 package com.imyyq.mvvm.base
 
 import android.app.Dialog
+import android.view.View
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import com.apkfuns.logutils.utils.Utils
 import com.imyyq.mvvm.app.GlobalConfig
 
 /**
@@ -23,7 +25,15 @@ interface ILoadingDialog {
         ) {
             dialog.setOnCancelListener { onCancelLoadingDialog() }
         }
-        dialog.findViewById<TextView>(loadingDialogLayoutMsgId())?.text = msg
+        dialog.findViewById<TextView>(loadingDialogLayoutMsgId())?.apply {
+            visibility = if (msg.isNullOrEmpty())
+                View.GONE
+            else{
+                text = msg
+                View.VISIBLE
+            }
+
+        }
     }
 
     /**
@@ -61,10 +71,12 @@ interface ILoadingDialog {
     /**
      * 详见 [com.imyyq.mvvm.app.GlobalConfig.LoadingDialog.gLoadingDialogCanceledOnTouchOutside]
      */
-    fun isLoadingDialogCanceledOnTouchOutside() = GlobalConfig.LoadingDialog.gLoadingDialogCanceledOnTouchOutside
+    fun isLoadingDialogCanceledOnTouchOutside() =
+        GlobalConfig.LoadingDialog.gLoadingDialogCanceledOnTouchOutside
 
     /**
      * 详见 [com.imyyq.mvvm.app.GlobalConfig.LoadingDialog.gIsCancelConsumingTaskWhenLoadingDialogCanceled]
      */
-    fun isCancelConsumingTaskWhenLoadingDialogCanceled() = GlobalConfig.LoadingDialog.gIsCancelConsumingTaskWhenLoadingDialogCanceled
+    fun isCancelConsumingTaskWhenLoadingDialogCanceled() =
+        GlobalConfig.LoadingDialog.gIsCancelConsumingTaskWhenLoadingDialogCanceled
 }

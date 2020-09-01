@@ -13,26 +13,12 @@ open class BaseApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
         initApp(this)
-
         val processName = AppUtil.currentProcessName
         if (processName == packageName) {
+            onMainProcessInit()
             // 主进程初始化
             initResource(this)
-            onMainProcessInit()
-
-            LogUtils.getLogConfig()
-                .configAllowLog(GlobalConfig.gIsDebug)
-                .configTagPrefix(AppUtil.appLabel)
-                .configShowBorders(true)
-                .configFormatTag("%d{HH:mm:ss:SSS} %t %c{-5}")
-
-            LogUtils.getLog2FileConfig()
-                .configLog2FileEnable(GlobalConfig.gIsDebug) // targetSdkVersion >= 23 需要确保有写sdcard权限
-                .configLog2FilePath(FileUtil.appLogDir)
-                .configLog2FileNameFormat("%d{yyyyMMdd}.txt")
-                .configLogFileEngine(LogFileEngineFactory(getInstance()))
 
         } else {
             // 其他进程初始化

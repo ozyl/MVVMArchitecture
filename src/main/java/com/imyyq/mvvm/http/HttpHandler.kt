@@ -1,11 +1,14 @@
 package com.imyyq.mvvm.http
 
-import android.util.Log
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import retrofit2.HttpException
+import java.net.UnknownHostException
+
 
 object HttpHandler {
+
+
     /**
      * 处理请求结果
      *
@@ -18,18 +21,18 @@ object HttpHandler {
         entity: IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?,
-        onFailed: ((code: Int, msg: String?) -> Unit)? = null
+        onFailed: ((code: Int, msg: String?,data:T?)->Unit)? = null
     ) {
         // 防止实体为 null
         if (entity == null) {
-            onFailed?.invoke(entityNullable, msgEntityNullable)
+            onFailed?.invoke(entityNullable, msgEntityNullable,null)
             return
         }
         val code = entity.code()
         val msg = entity.msg()
         // 防止状态码为 null
         if (code == null) {
-            onFailed?.invoke(entityCodeNullable, msgEntityCodeNullable)
+            onFailed?.invoke(entityCodeNullable, msgEntityCodeNullable,null)
             return
         }
         // 请求成功
@@ -40,7 +43,7 @@ object HttpHandler {
             entity.data()?.let { onResult?.invoke(it) }
         } else {
             // 失败了
-            onFailed?.invoke(code, msg)
+            onFailed?.invoke(code, msg,entity.data())
         }
     }
 
@@ -49,19 +52,25 @@ object HttpHandler {
      */
     fun handleException(
         e: Exception,
-        onFailed: (code: Int, msg: String?) -> Unit
+        onFailed: (code: Int, msg: String?,data:Nothing?) -> Unit
     ) {
         if (GlobalConfig.gIsDebug) {
             e.printStackTrace()
         }
-        return if (e is HttpException) {
-            onFailed(e.code(), e.message())
-        } else {
-            val log = Log.getStackTraceString(e)
-            onFailed(
-                notHttpException,
-                "$msgNotHttpException, 具体错误是\n${if (log.isEmpty()) e.message else log}"
-            )
+        return when (e) {
+            is HttpException -> {
+                onFailed(e.code(), e.message(),null)
+            }
+            is UnknownHostException -> {
+                onFailed(netException, msgNotHttpException,null)
+            }
+            else -> {
+                onFailed(
+                    notHttpException,
+                    msgException,
+                    null
+                )
+            }
         }
     }
 }

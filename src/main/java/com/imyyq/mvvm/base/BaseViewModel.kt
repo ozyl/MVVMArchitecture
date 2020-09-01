@@ -67,7 +67,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         block: suspend CoroutineScope.() -> IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?=null,
-        onFailed: ((code: Int, msg: String?) -> Unit)? = null,
+        onFailed: ((code: Int, msg: String?,data:T?) -> Unit)? = null,
         onComplete: (() -> Unit)? = null
     ) {
         viewModelScope.launch {
@@ -167,7 +167,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
     // 以下是加载中对话框相关的 =========================================================
 
     fun showLoadingDialog() {
-        showLoadingDialog(getApplication<Application>().getString(R.string.please_wait))
+        showLoadingDialog(null)
     }
 
     fun showLoadingDialog(msg: String?) {

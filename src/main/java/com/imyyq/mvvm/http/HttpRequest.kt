@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.collection.ArrayMap
+import boolean
 import com.apkfuns.logutils.LogUtils
 import com.imyyq.mvvm.BuildConfig
 import com.imyyq.mvvm.R
@@ -11,10 +12,12 @@ import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.interceptor.HeaderInterceptor
 import com.imyyq.mvvm.utils.AppUtil
-import com.imyyq.mvvm.utils.DateUtil
 import com.imyyq.mvvm.utils.SPUtils
+import com.imyyq.mvvm.utils.TimeUtils
 import com.imyyq.mvvm.utils.Utils
 import com.safframework.http.interceptor.LoggingInterceptor
+import com.tencent.mmkv.MMKV
+import mmkv
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -22,6 +25,7 @@ import okhttp3.Request
 import retrofit2.*
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import string
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -36,8 +40,8 @@ import java.util.concurrent.TimeUnit
  * 目的3：不同的接口，不同的缓存策略（？）
  */
 object HttpRequest {
-    private const val mSpName = "http_request_flag"
-    private const val mKeyIsSave = "is_save"
+
+    private var isSave by mmkv.boolean(key ="is_save", defaultValue = false)
 
     // 缓存 service
     private val mServiceMap = ArrayMap<String, Any>()
@@ -107,8 +111,8 @@ object HttpRequest {
                     .loggable(BuildConfig.DEBUG)
                     .request()
                     .response()
-                    .requestTag("Request--Start:${DateUtil.formatYMDHMS_SSS()}")
-                    .responseTag("Response--End:${DateUtil.formatYMDHMS_SSS()}")
+                    .requestTag("Request")
+                    .responseTag("Response")
                     //.hideVerticalLine()// 隐藏竖线边框
                     .build())
             val client = httpClientBuilder.build()
@@ -122,9 +126,8 @@ object HttpRequest {
                     mBaseUrlMap = ArrayMap()
                 }
                 // 将 url 缓存起来
-                val sp = SPUtils.getInstance(mSpName)
-                if (sp.getBoolean(mKeyIsSave)) {
-                    mBaseUrlMap[host] = sp.getString(host)
+                if (isSave) {
+                    mBaseUrlMap[host] = mmkv.decodeString(host);
                 } else {
                     mBaseUrlMap[host] = ""
                 }
@@ -289,11 +292,9 @@ object HttpRequest {
                 }
                 layout.addView(btn)
 
-                val sp = SPUtils.getInstance(mSpName)
-
                 val checkBox = CheckBox(activity)
                 checkBox.text = activity.getString(R.string.effective_next_time)
-                checkBox.isChecked = sp.getBoolean(mKeyIsSave)
+                checkBox.isChecked = isSave
                 layout.addView(checkBox)
 
                 val editDialog = AlertDialog.Builder(activity)
@@ -304,15 +305,15 @@ object HttpRequest {
                         mBaseUrlMap[textView.text.toString()] = etList[index].text.toString()
                     }
                     checkBox.isChecked.apply {
-                        sp.put(mKeyIsSave, this)
+                        isSave = this
 
                         if (this) {
                             mBaseUrlMap.forEach { entry ->
-                                sp.put(entry.key, entry.value)
+                                mmkv.encode(entry.key, entry.value)
                             }
                         } else {
                             mBaseUrlMap.forEach { entry ->
-                                sp.put(entry.key, "")
+                                mmkv.encode(entry.key, "")
                             }
                         }
                     }

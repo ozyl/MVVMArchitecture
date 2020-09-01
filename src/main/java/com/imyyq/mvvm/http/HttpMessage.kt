@@ -1,5 +1,6 @@
 package com.imyyq.mvvm.http
 
-const val msgEntityNullable = "实体为 null"
-const val msgEntityCodeNullable = "实体状态码为 null"
-const val msgNotHttpException = "网络请求发生错误，但错误不是 HttpException！"
+const val msgEntityNullable = "(1)维护中..."
+const val msgEntityCodeNullable = "(2)维护中..."
+const val msgNotHttpException = "网络不可用，请检查你的网络设置"
+const val msgException = "出了点小问题"

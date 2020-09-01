@@ -36,7 +36,7 @@ object AppActivityManager {
         current()?.finish()
     }
 
-    fun finishActivity(activity: Activity) {
+    private fun finishActivity(activity: Activity) {
         checkEnabled()
         mActivityList.forEach {
             if (it == activity) {
@@ -47,12 +47,34 @@ object AppActivityManager {
         }
     }
 
+    fun finishActivity(vararg clazz: Class<Activity>) {
+        checkEnabled()
+        if (clazz.isEmpty()) return
+        clazz.forEach {
+            val activity  = get(it)?:return
+            finishActivity(activity)
+        }
+    }
+
     fun finishAllActivity() {
         checkEnabled()
         mActivityList.forEach {
             it.finish()
         }
         mActivityList.clear()
+    }
+
+    fun finishAllActivity(vararg excludeClazz: Class<Activity>) {
+        checkEnabled()
+        mActivityList.forEachIndexed { index, activity ->
+            excludeClazz.forEach {
+                if (get(it)==activity){
+                    return@forEachIndexed
+                }
+            }
+            activity.finish()
+            mActivityList.removeAt(index)
+        }
     }
 
     private fun checkEnabled() {

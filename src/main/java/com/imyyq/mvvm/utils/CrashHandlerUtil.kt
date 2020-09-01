@@ -36,7 +36,7 @@ object CrashHandlerUtil : UncaughtExceptionHandler {
         val lineSeparator = "\r\n"
 
         val sb = StringBuilder()
-        val logTime = "logTime:" + DateUtil.formatYMDHMS_()
+        val logTime = "logTime:" + TimeUtils.nowString
 
         val exception = "exception:$ex"
 
@@ -70,7 +70,7 @@ object CrashHandlerUtil : UncaughtExceptionHandler {
     private fun handleException(ex: Throwable) {
         try {
             FileOutputStream(
-                    CRASH_LOG_PATH + DateUtil.formatYMDHMS() + ".log", true).use { outputStream ->
+                    CRASH_LOG_PATH + TimeUtils.nowMills + ".log", true).use { outputStream ->
                 outputStream.write(formatLogInfo(ex).toByteArray())
                 outputStream.write("\n".toByteArray())
                 outputStream.write("\n".toByteArray())
