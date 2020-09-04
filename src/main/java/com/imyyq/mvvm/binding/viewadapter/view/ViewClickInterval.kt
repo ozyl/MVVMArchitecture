@@ -42,11 +42,11 @@ private fun <T : View> T.clickEnable(): Boolean {
  * @param block: (T) -> Unit 函数
  * @return Unit
  */
-fun <T : View> T.clickWithTrigger(delay: Long = 500, block: View.OnClickListener) {
+fun <T : View> T.clickWithTrigger(delay: Long = 500, block: (v:View)->Unit) {
     triggerDelay = delay
     setOnClickListener {
         if (clickEnable()) {
-            block.onClick(this)
+            block(this)
         }
     }
 }

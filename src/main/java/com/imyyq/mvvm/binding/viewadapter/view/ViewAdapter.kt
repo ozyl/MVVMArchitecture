@@ -20,9 +20,10 @@ fun onClickCommand(
     clickCommand ?: return
     if (isInterval ?: GlobalConfig.Click.gIsClickInterval) {
         view.clickWithTrigger(
-            (intervalMilliseconds ?: GlobalConfig.Click.gClickIntervalMilliseconds).toLong(),
-            clickCommand
-        )
+            (intervalMilliseconds ?: GlobalConfig.Click.gClickIntervalMilliseconds).toLong()
+        ) {
+            clickCommand.onClick(it)
+        }
     } else {
         view.setOnClickListener(clickCommand)
     }
@@ -42,11 +43,12 @@ fun multiClickToChangeBaseUrl(
 /**
  * view的显示隐藏
  */
-@BindingAdapter(value = ["isVisible"], requireAll = false)
-fun isVisible(view: View, visibility: Boolean) {
-    if (visibility) {
-        view.visibility = View.VISIBLE
-    } else {
-        view.visibility = View.GONE
+@BindingAdapter(value = ["isVisible", "isGone"], requireAll = false)
+fun isVisible(view: View, visibility: Boolean?, gone: Boolean?) {
+    visibility?.run {
+        view.visibility = if (this) View.VISIBLE else View.INVISIBLE
+    }
+    gone?.run {
+        view.visibility = if (this) View.GONE else View.VISIBLE
     }
 }

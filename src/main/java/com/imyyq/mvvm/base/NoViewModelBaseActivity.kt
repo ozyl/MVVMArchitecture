@@ -35,29 +35,10 @@ abstract class NoViewModelBaseActivity<V : ViewBinding> :
     final override fun initUiChangeLiveData() {
     }
 
-    @SuppressLint("MissingSuperCall")
-    final override fun onCancelLoadingDialog() {
-    }
 
     final override fun initViewModel(viewModelStoreOwner: ViewModelStoreOwner): BaseViewModel<BaseModel> {
         return super.initViewModel(viewModelStoreOwner)
     }
-
-    final override fun showLoadingDialog(dialog: Dialog, msg: String?) {
-    }
-
-    final override fun dismissLoadingDialog(dialog: Dialog) {
-    }
-
-    final override fun loadingDialogLayout(): Int = 0
-
-    final override fun loadingDialogLayoutMsgId(): Int = 0
-
-    final override fun isLoadingDialogCancelable() = false
-
-    final override fun isLoadingDialogCanceledOnTouchOutside() = false
-
-    final override fun isCancelConsumingTaskWhenLoadingDialogCanceled() = false
 
     final override fun onLoadSirShowed(it: Class<out Callback>) {
     }

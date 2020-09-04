@@ -10,21 +10,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArrayMap
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
-import com.imyyq.mvvm.R
+import com.github.anzewei.parallaxbacklayout.ParallaxBack
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
-import com.imyyq.mvvm.widget.CustomLayoutDialog
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
+import com.kongzue.dialog.interfaces.OnDismissListener
+import com.kongzue.dialog.v3.TipDialog
+import com.kongzue.dialog.v3.WaitDialog
 
 /**
  * 通过构造函数和泛型，完成 view 的初始化和 vm 的初始化，并且将它们绑定，
  */
-abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out BaseModel>> :SwipeBackActivity(),
+@ParallaxBack(edge = ParallaxBack.Edge.LEFT, layout = ParallaxBack.Layout.PARALLAX)
+abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out BaseModel>> :
+    AppCompatActivity(),
     IView<V, VM>, ILoadingDialog, ILoading, IActivityResult, IArgumentsFromIntent {
 
     protected lateinit var mBinding: V
@@ -33,13 +36,6 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
-    // 保证只有主线程访问这个变量，所以 lazy 不需要同步机制
-    private val mLoadingDialog by lazy(mode = LazyThreadSafetyMode.NONE) {
-        CustomLayoutDialog(
-            this,
-            loadingDialogLayout()
-        )
-    }
 
     private lateinit var mLoadService: LoadService<*>
 
@@ -57,7 +53,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     @CallSuper
     override fun initViewAndViewModel() {
-        mBinding = initBinding(layoutInflater,null)
+        mBinding = initBinding(layoutInflater, null)
         setContentView(contentView())
         mViewModel = initViewModel(this)
         mViewModel.mIntent = getArgumentsIntent()
@@ -160,14 +156,30 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
         if (isNeedLoadingDialog()) {
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
-
-            // 显示对话框
-            mViewModel.mUiChangeLiveData.showLoadingDialogEvent?.observe(this, Observer {
-                showLoadingDialog(mLoadingDialog, it)
-            })
-            // 隐藏对话框
-            mViewModel.mUiChangeLiveData.dismissLoadingDialogEvent?.observe(this, Observer {
-                dismissLoadingDialog(mLoadingDialog)
+            // 显示waitLoading
+            mViewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
+                when (it?.type) {
+                    UIEventType.DL_TIP_WAIT -> {
+                        WaitDialog.show(this, it.msg).apply {
+                            cancelable = true
+                            onDismissListener = OnDismissListener {
+                                it.voidCallback?.invoke()
+                            }
+                        }
+                    }
+                    UIEventType.DL_TIP_DISMISS -> {
+                        WaitDialog.dismiss()
+                    }
+                    UIEventType.DL_TIP_SUCCESS -> {
+                        TipDialog.show(this, it.msg, TipDialog.TYPE.SUCCESS).setTipTime(it.time?:1000)
+                    }
+                    UIEventType.DL_TIP_FAIL -> {
+                        TipDialog.show(this, it.msg, TipDialog.TYPE.ERROR).setTipTime(it.time?:1000)
+                    }
+                    UIEventType.DL_TIP_WARNING -> {
+                        TipDialog.show(this, it.msg, TipDialog.TYPE.WARNING).setTipTime(it.time?:1000)
+                    }
+                }
             })
         }
     }
@@ -266,11 +278,6 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     fun <T> observe(liveData: LiveData<T>, onChanged: ((t: T) -> Unit)) =
         liveData.observe(this, Observer { onChanged(it) })
 
-    /**
-     * 如果加载中对话框可手动取消，并且开启了取消耗时任务的功能，则在取消对话框后调用取消耗时任务
-     */
-    @CallSuper
-    override fun onCancelLoadingDialog() = mViewModel.cancelConsumingTask()
 
     override fun onDestroy() {
         super.onDestroy()

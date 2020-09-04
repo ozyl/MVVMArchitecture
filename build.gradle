@@ -94,7 +94,7 @@ dependencies {
     // 使用 Java8 替换 lifecycleCompiler，让 vm 可以感知 v 生命周期
     api Deps.lifecycleJava8
 
-    api Deps.bgaSwipebackLayout
+    api Deps.parallaxBackLayout
 
     api Deps.logginginterceptor
 
@@ -103,6 +103,8 @@ dependencies {
     
     api Deps.log4a
     api Deps.mmkv
+
+    api project(path: ':library-dialog')
 
     // 监控应用的生命周期
     checkMVVMConfigProperty(IncludeLib.lifecycleProcess, "lifecycleProcess")

@@ -32,7 +32,6 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
-    private val mLoadingDialog by lazy(mode = LazyThreadSafetyMode.NONE) { CustomLayoutDialog(requireActivity(), loadingDialogLayout()) }
 
     private lateinit var mLoadService: LoadService<*>
 
@@ -138,14 +137,6 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         if (isNeedLoadingDialog()) {
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
 
-            // 显示对话框
-            mViewModel.mUiChangeLiveData.showLoadingDialogEvent?.observe(this, Observer {
-                showLoadingDialog(mLoadingDialog, it)
-            })
-            // 隐藏对话框
-            mViewModel.mUiChangeLiveData.dismissLoadingDialogEvent?.observe(this, Observer {
-                dismissLoadingDialog(mLoadingDialog)
-            })
         }
     }
 
@@ -238,12 +229,6 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
      */
     fun <T> observe(liveData: LiveData<T>, onChanged: ((t: T) -> Unit)) =
         liveData.observe(this, Observer { onChanged(it) })
-
-    /**
-     * 如果加载中对话框可手动取消，并且开启了取消耗时任务的功能，则在取消对话框后调用取消耗时任务
-     */
-    @CallSuper
-    override fun onCancelLoadingDialog() = mViewModel.cancelConsumingTask()
 
     override fun onDestroyView() {
         super.onDestroyView()

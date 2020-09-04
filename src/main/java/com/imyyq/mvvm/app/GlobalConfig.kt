@@ -80,18 +80,6 @@ object GlobalConfig {
          * 页面在显示数据时需要时间，因此显示加载中对话框，如果不需要，可以设置为 false，以免创建不必要的对象
          */
         var gIsNeedLoadingDialog = false
-
-        /**
-         * 加载中对话框的 layout
-         */
-        @LayoutRes
-        var gLoadingDialogLayout = R.layout.mvvm_dlg_loading
-
-        /**
-         * 加载中对话框的 layout 消息id
-         */
-        @IdRes
-        var gLoadingDialogLayoutMsgId = R.id.tv_msg
     }
 
     object StartAndFinish {

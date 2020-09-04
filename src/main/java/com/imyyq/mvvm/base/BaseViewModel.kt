@@ -9,7 +9,6 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewModelScope
-import com.imyyq.mvvm.R
 import com.imyyq.mvvm.app.CheckUtil
 import com.imyyq.mvvm.app.RepositoryManager
 import com.imyyq.mvvm.bus.LiveDataBus
@@ -20,9 +19,11 @@ import com.imyyq.mvvm.utils.isInUIThread
 import com.kingja.loadsir.callback.Callback
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -166,27 +167,16 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
 
     // 以下是加载中对话框相关的 =========================================================
 
-    fun showLoadingDialog() {
-        showLoadingDialog(null)
-    }
 
-    fun showLoadingDialog(msg: String?) {
-        CheckUtil.checkLoadingDialogEvent(mUiChangeLiveData.showLoadingDialogEvent)
+    fun runCommonUIEvent(UIEvent: UIEvent?) {
+        CheckUtil.checkLoadingDialogEvent(mUiChangeLiveData.UIEvent)
         if (isInUIThread()) {
-            mUiChangeLiveData.showLoadingDialogEvent?.value = msg
+            mUiChangeLiveData.UIEvent?.value = UIEvent
         } else {
-            mUiChangeLiveData.showLoadingDialogEvent?.postValue(msg)
+            mUiChangeLiveData.UIEvent?.postValue(UIEvent)
         }
     }
 
-    fun dismissLoadingDialog() {
-        CheckUtil.checkLoadingDialogEvent(mUiChangeLiveData.dismissLoadingDialogEvent)
-        if (isInUIThread()) {
-            mUiChangeLiveData.dismissLoadingDialogEvent?.call()
-        } else {
-            mUiChangeLiveData.dismissLoadingDialogEvent?.postValue(null)
-        }
-    }
 
     // 以下是内嵌加载中布局相关的 =========================================================
 
@@ -273,8 +263,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
      * 通用的 Ui 改变变量
      */
     class UiChangeLiveData {
-        var showLoadingDialogEvent: SingleLiveEvent<String?>? = null
-        var dismissLoadingDialogEvent: SingleLiveEvent<Any?>? = null
+        var UIEvent: SingleLiveEvent<UIEvent?>? = null
 
         var startActivityEvent: String? = null
         var startActivityWithMapEvent: String? = null
@@ -294,8 +283,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         }
 
         fun initLoadingDialogEvent() {
-            showLoadingDialogEvent = SingleLiveEvent()
-            dismissLoadingDialogEvent = SingleLiveEvent()
+            UIEvent = SingleLiveEvent()
         }
 
         fun initStartActivityForResultEvent() {
