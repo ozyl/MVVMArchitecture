@@ -103,6 +103,7 @@ dependencies {
     
     api Deps.log4a
     api Deps.mmkv
+    api Deps.toast
 
     api project(path: ':library-dialog')
 

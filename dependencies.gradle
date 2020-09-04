@@ -113,7 +113,8 @@ ext {
             log4a          :'com.apkfuns.log2file:log2file:1.3.1',
             mmkv :          'com.tencent:mmkv:1.0.22',
 
-            parallaxBackLayout :'com.github.anzewei:parallaxbacklayout:1.1.9'
+            parallaxBackLayout :'com.github.anzewei:parallaxbacklayout:1.1.9',
+            toast :'com.hjq:toast:8.6'
     ]
 
     Hilt = [

@@ -37,3 +37,7 @@ app/build
 /Test
 
 /app/.externalNativeBuild
+
+gradle/
+gradlew
+gradlew.bat

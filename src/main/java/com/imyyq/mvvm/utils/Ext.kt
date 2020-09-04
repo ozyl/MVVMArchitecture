@@ -3,6 +3,7 @@ package com.imyyq.mvvm.utils
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
+import com.hjq.toast.ToastUtils
 import com.imyyq.mvvm.app.BaseApp
 
 fun obtainColor(resId:Int): Int {
@@ -10,11 +11,11 @@ fun obtainColor(resId:Int): Int {
 }
 
 fun showToast(msg: String){
-    ToastUtil.showShortToast(msg)
+    ToastUtils.show(msg)
 }
 
 fun showToastResId(@StringRes resId:Int,vararg formatArgs:Any){
-    ToastUtil.showShortToast(
+    ToastUtils.show(
         obtainString(
             resId,
             formatArgs
