@@ -13,15 +13,12 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.fenxiangbuy.dialog.WaitDialog
 import com.github.anzewei.parallaxbacklayout.ParallaxBack
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
-import com.kongzue.dialog.interfaces.OnDismissListener
-import com.kongzue.dialog.v3.TipDialog
-import com.kongzue.dialog.v3.WaitDialog
-
 /**
  * 通过构造函数和泛型，完成 view 的初始化和 vm 的初始化，并且将它们绑定，
  */
@@ -33,6 +30,9 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     protected lateinit var mBinding: V
     protected lateinit var mViewModel: VM
 
+    val waitDialog by lazy {
+        WaitDialog()
+    }
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
@@ -159,25 +159,18 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
             // 显示waitLoading
             mViewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
                 when (it?.type) {
-                    UIEventType.DL_TIP_WAIT -> {
-                        WaitDialog.show(this, it.msg).apply {
-                            cancelable = true
-                            onDismissListener = OnDismissListener {
-                                it.voidCallback?.invoke()
-                            }
-                        }
+                    UIEventType.DIALOG_WAIT -> {
+                        waitDialog.hintMsg = it.msg
+                        waitDialog.show(this)
                     }
-                    UIEventType.DL_TIP_DISMISS -> {
-                        WaitDialog.dismiss()
+                    UIEventType.DIALOG_DISMISS -> {
+                        waitDialog.dismiss()
                     }
                     UIEventType.DL_TIP_SUCCESS -> {
-                        TipDialog.show(this, it.msg, TipDialog.TYPE.SUCCESS).setTipTime(it.time?:1000)
                     }
                     UIEventType.DL_TIP_FAIL -> {
-                        TipDialog.show(this, it.msg, TipDialog.TYPE.ERROR).setTipTime(it.time?:1000)
                     }
                     UIEventType.DL_TIP_WARNING -> {
-                        TipDialog.show(this, it.msg, TipDialog.TYPE.WARNING).setTipTime(it.time?:1000)
                     }
                 }
             })
