@@ -71,32 +71,8 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         onFailed: ((code: Int, msg: String?,data:T?) -> Unit)? = null,
         onComplete: (() -> Unit)? = null
     ) {
-        launch(viewModelScope,block,onSuccess,onResult,onFailed,onComplete)
+        com.imyyq.mvvm.utils.launch(viewModelScope,block,onSuccess,onResult,onFailed,onComplete)
     }
-    companion object{
-        /**
-         * 所有网络请求都在 mCoroutineScope 域中启动协程，当页面销毁时会自动取消
-         */
-        fun <T> launch(
-            viewModelScope:CoroutineScope,
-            block: suspend CoroutineScope.() -> IBaseResponse<T?>?,
-            onSuccess: (() -> Unit)? = null,
-            onResult: ((t: T) -> Unit)?=null,
-            onFailed: ((code: Int, msg: String?,data:T?) -> Unit)? = null,
-            onComplete: (() -> Unit)? = null
-        ) {
-            viewModelScope.launch {
-                try {
-                    HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
-                } catch (e: Exception) {
-                    onFailed?.let { HttpHandler.handleException(e, it) }
-                } finally {
-                    onComplete?.invoke()
-                }
-            }
-        }
-    }
-
 
     /**
      * 发起协程，让协程和 UI 相关

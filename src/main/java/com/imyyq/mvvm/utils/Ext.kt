@@ -2,19 +2,25 @@ package com.imyyq.mvvm.utils
 
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.hjq.toast.ToastUtils
 import com.imyyq.mvvm.app.BaseApp
+import com.imyyq.mvvm.base.IBaseResponse
+import com.imyyq.mvvm.http.HttpHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-fun obtainColor(resId:Int): Int {
-    return ContextCompat.getColor(BaseApp.getInstance(),resId)
+
+fun obtainColor(resId: Int): Int {
+    return ContextCompat.getColor(BaseApp.getInstance(), resId)
 }
 
-fun showToast(msg: String){
+fun showToast(msg: String) {
     ToastUtils.show(msg)
 }
 
-fun showToastResId(@StringRes resId:Int,vararg formatArgs:Any){
+fun showToastResId(@StringRes resId: Int, vararg formatArgs: Any) {
     ToastUtils.show(
         obtainString(
             resId,
@@ -23,12 +29,42 @@ fun showToastResId(@StringRes resId:Int,vararg formatArgs:Any){
     )
 }
 
-fun obtainString(@StringRes resId:Int,vararg formatArgs:Any):String{
-    return BaseApp.getInstance().getString(resId,*formatArgs)
+fun obtainString(@StringRes resId: Int, vararg formatArgs: Any): String {
+    return BaseApp.getInstance().getString(resId, *formatArgs)
 }
 
-inline fun <reified T> Gson.fromJson(json: String): T = this.fromJson(json, T::class.java)
+inline fun <reified T> String.toBean(): T = commonGson.fromJson<T>(this, object : TypeToken<T>() {}.type)
 
-fun <E,K,V> fromObj2Map(json: E):Map<K,V> {
-    return Gson().fromJson(Gson().toJson(json))
+inline fun <reified K, reified V> Any.toMap(): Map<K, V> {
+    commonGson.fromJson<Map<String,Any>>(commonGson.toJson(this), object : TypeToken<Map<String,Any>>() {}.type)
+    return commonGson.toJson(this).toBean()
+}
+
+val commonGson = GsonBuilder().registerTypeAdapter(
+    object : TypeToken<Map<String, Any>>() {}.type,
+    MapDeserializerDoubleAsIntFix()
+).create()
+
+
+
+/**
+ * 所有网络请求都在 mCoroutineScope 域中启动协程，当页面销毁时会自动取消
+ */
+fun <T> launch(
+    viewModelScope: CoroutineScope,
+    block: suspend CoroutineScope.() -> IBaseResponse<T?>?,
+    onSuccess: (() -> Unit)? = null,
+    onResult: ((t: T) -> Unit)?=null,
+    onFailed: ((code: Int, msg: String?,data:T?) -> Unit)? = null,
+    onComplete: (() -> Unit)? = null
+) {
+    viewModelScope.launch {
+        try {
+            HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
+        } catch (e: Exception) {
+            onFailed?.let { HttpHandler.handleException(e, it) }
+        } finally {
+            onComplete?.invoke()
+        }
+    }
 }

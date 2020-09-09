@@ -12,11 +12,8 @@ import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.interceptor.HeaderInterceptor
 import com.imyyq.mvvm.utils.AppUtil
-import com.imyyq.mvvm.utils.SPUtils
-import com.imyyq.mvvm.utils.TimeUtils
 import com.imyyq.mvvm.utils.Utils
 import com.safframework.http.interceptor.LoggingInterceptor
-import com.tencent.mmkv.MMKV
 import mmkv
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -25,7 +22,6 @@ import okhttp3.Request
 import retrofit2.*
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import string
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -111,6 +107,7 @@ object HttpRequest {
                     .loggable(BuildConfig.DEBUG)
                     .request()
                     .response()
+                    .hideVerticalLine()
                     .requestTag("Request")
                     .responseTag("Response")
                     //.hideVerticalLine()// 隐藏竖线边框
