@@ -20,10 +20,11 @@ fun setImageUri(
     error: Drawable?,
     roundingRadius:Int?
 ) {
-    if (!TextUtils.isEmpty(url)) {
+    if (!url.isNullOrBlank()) {
+        val newUrl = url.toIntOrNull()?:url
         //使用Glide框架加载图片
         val request = Glide.with(imageView.context)
-            .load(url)
+            .load(newUrl)
         val options = RequestOptions().apply {
             placeholder?.let {
                 placeholder(it)
