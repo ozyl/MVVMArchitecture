@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import com.apkfuns.logutils.utils.Utils
+import com.fenxiangbuy.dialog.BaseDialog
 import com.imyyq.mvvm.app.GlobalConfig
 
 /**
@@ -21,10 +22,11 @@ interface ILoadingDialog {
 data class UIEvent(
     val type: UIEventType,
     var msg: String?=null,
-    var voidCallback:(()->Unit)?=null,
+    var cancelVoidCallback:((BaseDialog)->Unit)?=null,
+    var confirmVoidCallback:((BaseDialog)->Unit)?=null,
     var time:Int?=null
 )
 
 enum class UIEventType {
-    DIALOG_WAIT, DIALOG_DISMISS, DL_TIP_SUCCESS, DL_TIP_FAIL,DL_TIP_WARNING
+    DIALOG_WAIT, DIALOG_DISMISS, DL_TIP_SUCCESS, DL_TIP_FAIL,DL_TIP_WARNING,DIALOG_MSG
 }
