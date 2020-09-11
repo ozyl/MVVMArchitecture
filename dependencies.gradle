@@ -114,7 +114,8 @@ ext {
             mmkv :          'com.tencent:mmkv:1.0.22',
 
             parallaxBackLayout :'com.github.anzewei:parallaxbacklayout:1.1.9',
-            toast :'com.hjq:toast:8.6'
+            toast :'com.hjq:toast:8.6',
+            basePopup : 'com.github.razerdp:BasePopup:2.2.7'
     ]
 
     Hilt = [
