@@ -105,8 +105,8 @@ dependencies {
     api Deps.mmkv
     api Deps.toast
     api project(':library-dialog')
-
-
+    
+    api AppDeps.autoSize
 
     // 监控应用的生命周期
     checkMVVMConfigProperty(IncludeLib.lifecycleProcess, "lifecycleProcess")

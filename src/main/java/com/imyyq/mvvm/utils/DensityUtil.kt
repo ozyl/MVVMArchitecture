@@ -1,44 +1,35 @@
 package com.imyyq.mvvm.utils
 
 import com.imyyq.mvvm.app.BaseApp
+import me.jessyan.autosize.utils.AutoSizeUtils
+import java.math.BigDecimal
 
 object DensityUtil {
-
-    /**
-     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
-     */
-    fun dp2px(dpValue: Float): Int {
-        val scale = BaseApp.getInstance().resources.displayMetrics.density
-        return (dpValue * scale + 0.5f).toInt()
+    fun dp2px(dp:Float): Int {
+        return AutoSizeUtils.dp2px(BaseApp.getInstance(),dp)
     }
 
-    /**
-     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
-     */
-    fun px2dp(pxValue: Float): Int {
-        val scale = BaseApp.getInstance().resources.displayMetrics.density
-        return (pxValue / scale + 0.5f).toInt()
+    fun sp2px(sp:Float): Int {
+        return AutoSizeUtils.sp2px(BaseApp.getInstance(),sp)
     }
 
-    /**
-     * 将px值转换为sp值，保证文字大小不变
-     *
-     * @param pxValue
-     * @return
-     */
-    fun px2sp(pxValue: Float): Int {
-        val fontScale = BaseApp.getInstance().resources.displayMetrics.scaledDensity
-        return (pxValue / fontScale + 0.5f).toInt()
+    inline fun <reified T> Number.dp2px(): T {
+        val value = dp2px(this.toFloat())
+        return conversionValue(value)
     }
 
-    /**
-     * 将sp值转换为px值，保证文字大小不变
-     *
-     * @param spValue
-     * @return
-     */
-    fun sp2px(spValue: Float): Int {
-        val fontScale = BaseApp.getInstance().resources.displayMetrics.scaledDensity
-        return (spValue * fontScale + 0.5f).toInt()
+    inline fun <reified T> Number.sp2px(): T {
+        val value = sp2px(this.toFloat())
+        return conversionValue(value)
+    }
+    inline fun <reified T> conversionValue(value: Int): T {
+        return when (T::class.java) {
+            Integer::class.java -> value
+            Double::class.java -> value.toDouble()
+            Long::class.java -> value.toLong()
+            java.lang.Float::class.java -> value.toFloat()
+            BigDecimal::class.java -> value.toBigDecimal()
+            else -> throw Exception("未处理该类型")
+        } as T
     }
 }
