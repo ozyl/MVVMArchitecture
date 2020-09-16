@@ -41,8 +41,11 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         savedInstanceState: Bundle?
     ): View? {
         mBinding = initBinding(inflater, container)
-        return mBinding.root
+        return contentView()
     }
+
+    open fun contentView() = mBinding.root
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

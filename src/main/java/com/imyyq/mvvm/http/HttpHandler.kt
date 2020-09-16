@@ -4,6 +4,8 @@ import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import retrofit2.HttpException
 import java.net.UnknownHostException
+import java.security.cert.CertPathValidatorException
+import javax.net.ssl.SSLHandshakeException
 
 
 object HttpHandler {
@@ -61,7 +63,7 @@ object HttpHandler {
             is HttpException -> {
                 onFailed(e.code(), e.message(),null)
             }
-            is UnknownHostException -> {
+            is UnknownHostException,is CertPathValidatorException,is SSLHandshakeException -> {
                 onFailed(netException, msgNotHttpException,null)
             }
             else -> {
