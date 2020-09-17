@@ -3,6 +3,7 @@ package com.imyyq.mvvm.http
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import retrofit2.HttpException
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.security.cert.CertPathValidatorException
 import javax.net.ssl.SSLHandshakeException
@@ -23,18 +24,18 @@ object HttpHandler {
         entity: IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?,
-        onFailed: ((code: Int, msg: String?,data:T?)->Unit)? = null
+        onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null
     ) {
         // 防止实体为 null
         if (entity == null) {
-            onFailed?.invoke(entityNullable, msgEntityNullable,null)
+            onFailed?.invoke(entityNullable, msgEntityNullable, null)
             return
         }
         val code = entity.code()
         val msg = entity.msg()
         // 防止状态码为 null
         if (code == null) {
-            onFailed?.invoke(entityCodeNullable, msgEntityCodeNullable,null)
+            onFailed?.invoke(entityCodeNullable, msgEntityCodeNullable, null)
             return
         }
         // 请求成功
@@ -45,7 +46,7 @@ object HttpHandler {
             entity.data()?.let { onResult?.invoke(it) }
         } else {
             // 失败了
-            onFailed?.invoke(code, msg,entity.data())
+            onFailed?.invoke(code, msg, entity.data())
         }
     }
 
@@ -54,17 +55,17 @@ object HttpHandler {
      */
     fun handleException(
         e: Exception,
-        onFailed: (code: Int, msg: String?,data:Nothing?) -> Unit
+        onFailed: (code: Int, msg: String?, data: Nothing?) -> Unit
     ) {
         if (GlobalConfig.gIsDebug) {
             e.printStackTrace()
         }
         return when (e) {
             is HttpException -> {
-                onFailed(e.code(), e.message(),null)
+                onFailed(e.code(), e.message(), null)
             }
-            is UnknownHostException,is CertPathValidatorException,is SSLHandshakeException -> {
-                onFailed(netException, msgNotHttpException,null)
+            is UnknownHostException, is CertPathValidatorException, is SSLHandshakeException, is SocketTimeoutException -> {
+                onFailed(netException, msgNotHttpException, null)
             }
             else -> {
                 onFailed(
