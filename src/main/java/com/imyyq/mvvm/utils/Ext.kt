@@ -2,6 +2,9 @@ package com.imyyq.mvvm.utils
 
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.hjq.toast.ToastUtils
@@ -67,4 +70,12 @@ fun <T> launch(
             onComplete?.invoke()
         }
     }
+}
+
+
+inline fun <reified T : ViewModel> ViewModelStoreOwner.getViewModel(): T {
+    return ViewModelProvider(
+        this,
+        ViewModelProvider.AndroidViewModelFactory(BaseApp.getInstance())
+    ).get(T::class.java)
 }
