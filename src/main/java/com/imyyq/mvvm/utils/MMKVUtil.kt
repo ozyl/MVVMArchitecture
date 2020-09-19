@@ -66,7 +66,7 @@ fun MMKV.string(key: String? = null, defaultValue: String? = null): ReadWritePro
 inline fun <reified T> MMKV.any(key: String? = null, defaultValue: T? = null): ReadWriteProperty<Any, T?> {
     return object : ReadWriteProperty<Any, T?> {
         override fun getValue(thisRef: Any, property: KProperty<*>): T? {
-           return defaultValue?.let {decodeString(key ?: property.name, Gson().toJson(defaultValue)).toBean()}}
+           return decodeString(key ?: property.name, Gson().toJson(defaultValue)).toBean()}
 
         override fun setValue(thisRef: Any, property: KProperty<*>, value: T?) {
             encode(key ?: property.name,value?.let { Gson().toJson(value) })
