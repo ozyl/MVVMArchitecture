@@ -54,8 +54,8 @@ fun setImageUri(
             roundingRadius?.let {
                 apply(RequestOptions.bitmapTransform(RoundedCornersExt(DensityUtil.dp2px(it.toFloat()))))
             } ?: run {
-                if (topLeftRoundingRadius != null && topRightRoundingRadius != null && bottomLeftRoundingRadius != null && bottomRightRoundingRadius != null) {
-                    if ((topRightRoundingRadius + topLeftRoundingRadius + bottomLeftRoundingRadius + bottomRightRoundingRadius) > 0) {
+                if (topLeftRoundingRadius != null || topRightRoundingRadius != null || bottomLeftRoundingRadius != null || bottomRightRoundingRadius != null) {
+                    if ((topRightRoundingRadius?:0 + (topLeftRoundingRadius?:0) + (bottomLeftRoundingRadius?:0) + (bottomRightRoundingRadius?:0)) > 0) {
                         apply(
                             RequestOptions.bitmapTransform(
                                 RoundedCornersExt(

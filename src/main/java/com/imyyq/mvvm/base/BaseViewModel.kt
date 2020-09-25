@@ -64,7 +64,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
     /**
      * 所有网络请求都在 mCoroutineScope 域中启动协程，当页面销毁时会自动取消
      */
-    fun <T> launch(
+    open fun <T> launch(
         block: suspend CoroutineScope.() -> IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?=null,
