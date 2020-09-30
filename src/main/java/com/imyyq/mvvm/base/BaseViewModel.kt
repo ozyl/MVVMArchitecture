@@ -8,6 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.collection.ArrayMap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.imyyq.mvvm.app.CheckUtil
 import com.imyyq.mvvm.app.RepositoryManager
@@ -165,6 +166,14 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
             mUiChangeLiveData.UIEvent?.value = UIEvent
         } else {
             mUiChangeLiveData.UIEvent?.postValue(UIEvent)
+        }
+    }
+
+    fun <T> refreshEvent(data:T,event: MutableLiveData<T>?) {
+        if (isInUIThread()) {
+            event?.value = data
+        } else {
+            event?.postValue(data)
         }
     }
 

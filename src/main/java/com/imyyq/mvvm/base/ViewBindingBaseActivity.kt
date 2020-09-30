@@ -13,12 +13,16 @@ import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.fenxiangbuy.dialog.MsgDialog
 import com.fenxiangbuy.dialog.WaitDialog
+import com.fenxiangbuy.dialog.data.model.BtnConfig
 import com.github.anzewei.parallaxbacklayout.ParallaxBack
+import com.imyyq.mvvm.R
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
+
 /**
  * 通过构造函数和泛型，完成 view 的初始化和 vm 的初始化，并且将它们绑定，
  */
@@ -32,6 +36,10 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     val waitDialog by lazy {
         WaitDialog()
+    }
+
+    val msgDialog by lazy {
+        MsgDialog()
     }
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
@@ -158,13 +166,19 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
             // 显示waitLoading
             mViewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
-                when (it?.type) {
+                it?:return@Observer
+                if (it.isExtendsMsgDialog){
+                    extUiEvent(it)
+                    return@Observer
+                }
+                when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
                         waitDialog.hintMsg = it.msg
                         waitDialog.show(this)
                     }
                     UIEventType.DIALOG_DISMISS -> {
                         waitDialog.dismiss()
+                        msgDialog.dismiss()
                     }
                     UIEventType.DL_TIP_SUCCESS -> {
                     }
@@ -172,9 +186,32 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                     }
                     UIEventType.DL_TIP_WARNING -> {
                     }
+                    UIEventType.DIALOG_MSG -> {
+                        initMsgDialog(msgDialog,it)
+                        msgDialog.show(this)
+                    }
                 }
             })
         }
+    }
+
+    open fun extUiEvent(it:UIEvent){
+
+    }
+
+    open fun initMsgDialog(msgDialog : MsgDialog,it:UIEvent){
+        msgDialog.content = it.msg ?: ""
+        msgDialog.title = it.title ?: "温馨提示"
+        msgDialog.confirm =
+            if (it.autoConfirm || it.confirmVoidCallback != null) BtnConfig(
+                click = it.confirmVoidCallback,
+                text = it.confirmText
+            ) else null
+        msgDialog.cancel =
+            if (it.autoCancel || it.cancelVoidCallback != null) BtnConfig(
+                click = it.cancelVoidCallback,
+                text = it.cancelText
+            ) else null
     }
 
     @CallSuper

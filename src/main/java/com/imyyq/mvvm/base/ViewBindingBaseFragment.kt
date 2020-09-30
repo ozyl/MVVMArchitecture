@@ -252,6 +252,9 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             }
         }
     }
+    
+    val bindingIsInit :Boolean
+    get() = this::mBinding.isInitialized
 
     override fun onDestroy() {
         super.onDestroy()

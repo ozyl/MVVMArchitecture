@@ -22,10 +22,18 @@ interface ILoadingDialog {
 data class UIEvent(
     val type: UIEventType,
     var msg: String?=null,
-    var cancelVoidCallback:((BaseDialog)->Unit)?=null,
-    var confirmVoidCallback:((BaseDialog)->Unit)?=null,
-    var time:Int?=null
+    var title: String?=null,
+    var isExtendsMsgDialog:Boolean = false,
+    var cancelVoidCallback:(()->Unit)?=null,
+    var confirmVoidCallback:(()->Unit)?=null,
+    var autoConfirm:Boolean=true,
+    var autoCancel:Boolean=true,
+    var confirmText:String?=null,
+    var cancelText:String?=null,
+    var time:Int?=null,
+    var extModel: Any?=null
 )
+
 
 enum class UIEventType {
     DIALOG_WAIT, DIALOG_DISMISS, DL_TIP_SUCCESS, DL_TIP_FAIL,DL_TIP_WARNING,DIALOG_MSG
