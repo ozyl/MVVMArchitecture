@@ -21,8 +21,8 @@ interface ILoadingDialog {
 
 data class UIEvent(
     val type: UIEventType,
-    var msg: String?=null,
-    var title: String?=null,
+    var msg: CharSequence?=null,
+    var title: CharSequence?=null,
     var isExtendsMsgDialog:Boolean = false,
     var cancelVoidCallback:(()->Unit)?=null,
     var confirmVoidCallback:(()->Unit)?=null,

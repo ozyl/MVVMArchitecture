@@ -166,8 +166,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
             // 显示waitLoading
             mViewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
-                it?:return@Observer
-                if (it.isExtendsMsgDialog){
+                it ?: return@Observer
+                if (it.isExtendsMsgDialog) {
                     extUiEvent(it)
                     return@Observer
                 }
@@ -187,7 +187,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                     UIEventType.DL_TIP_WARNING -> {
                     }
                     UIEventType.DIALOG_MSG -> {
-                        initMsgDialog(msgDialog,it)
+                        initMsgDialog(msgDialog, it)
                         msgDialog.show(this)
                     }
                 }
@@ -195,23 +195,23 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         }
     }
 
-    open fun extUiEvent(it:UIEvent){
+    open fun extUiEvent(it: UIEvent) {
 
     }
 
-    open fun initMsgDialog(msgDialog : MsgDialog,it:UIEvent){
+    open fun initMsgDialog(msgDialog: MsgDialog, it: UIEvent) {
         msgDialog.content = it.msg ?: ""
         msgDialog.title = it.title ?: "温馨提示"
-        msgDialog.confirm =
-            if (it.autoConfirm || it.confirmVoidCallback != null) BtnConfig(
-                click = it.confirmVoidCallback,
-                text = it.confirmText
-            ) else null
-        msgDialog.cancel =
-            if (it.autoCancel || it.cancelVoidCallback != null) BtnConfig(
+
+        if (it.autoConfirm || it.confirmVoidCallback != null) msgDialog.confirm = BtnConfig(
+            click = it.confirmVoidCallback,
+            text = it.confirmText
+        )
+        if (it.autoCancel || it.cancelVoidCallback != null) msgDialog.cancel =
+            BtnConfig(
                 click = it.cancelVoidCallback,
                 text = it.cancelText
-            ) else null
+            )
     }
 
     @CallSuper
