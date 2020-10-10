@@ -20,6 +20,7 @@ import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.HttpHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
@@ -83,8 +84,8 @@ fun <T> launch(
     onResult: ((t: T) -> Unit)? = null,
     onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
     onComplete: (() -> Unit)? = null
-) {
-    viewModelScope.launch {
+): Job {
+    return viewModelScope.launch {
         try {
             HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
         } catch (e: Exception) {

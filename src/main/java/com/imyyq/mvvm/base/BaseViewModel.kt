@@ -21,6 +21,7 @@ import com.kingja.loadsir.callback.Callback
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -71,8 +72,8 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         onResult: ((t: T) -> Unit)?=null,
         onFailed: ((code: Int, msg: String?,data:T?) -> Unit)? = null,
         onComplete: (() -> Unit)? = null
-    ) {
-        com.imyyq.mvvm.utils.launch(viewModelScope,block,onSuccess,onResult,onFailed,onComplete)
+    ): Job {
+        return com.imyyq.mvvm.utils.launch(viewModelScope,block,onSuccess,onResult,onFailed,onComplete)
     }
 
     /**
