@@ -20,6 +20,7 @@ import com.github.anzewei.parallaxbacklayout.ParallaxBack
 import com.imyyq.mvvm.R
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
+import com.kingja.loadsir.callback.Callback
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
 
@@ -218,21 +219,35 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     override fun initLoadSir() {
         // 只有目标不为空的情况才有实例化的必要
         if (getLoadSirTarget() != null) {
-            mLoadService = LoadSir.getDefault().register(
+            mLoadService = getLoadSir().register(
                 getLoadSirTarget()
             ) { onLoadSirReload() }
 
             mViewModel.mUiChangeLiveData.initLoadSirEvent()
             mViewModel.mUiChangeLiveData.loadSirEvent?.observe(this, Observer {
                 if (it == null) {
-                    mLoadService.showSuccess()
+                    showStatusSuccess()
                     onLoadSirSuccess()
                 } else {
-                    mLoadService.showCallback(it)
+                    showStatusCallback(it)
                     onLoadSirShowed(it)
                 }
             })
         }
+    }
+
+    open fun getLoadSir() = LoadSir.getDefault()
+
+
+
+
+    fun showStatusCallback(it: Class<out Callback>?) {
+        mLoadService.showCallback(it)
+    }
+
+
+    fun showStatusSuccess() {
+        mLoadService.showSuccess()
     }
 
     fun startActivity(
