@@ -9,11 +9,15 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
+import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArrayMap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.fenxiangbuy.dialog.MsgDialog
+import com.fenxiangbuy.dialog.WaitDialog
+import com.fenxiangbuy.dialog.data.model.BtnConfig
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.core.LoadService
@@ -31,6 +35,13 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
+    val waitDialog by lazy {
+        WaitDialog()
+    }
+
+    val msgDialog by lazy {
+        MsgDialog()
+    }
 
     private lateinit var mLoadService: LoadService<*>
 
@@ -89,7 +100,8 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                 },
                 true
             )
-            LiveDataBus.observe<Pair<Class<out Activity>, ArrayMap<String, *>>>(this,
+            LiveDataBus.observe<Pair<Class<out Activity>, ArrayMap<String, *>>>(
+                this,
                 mViewModel.mUiChangeLiveData.startActivityWithMapEvent!!,
                 Observer {
                     startActivity(it?.first, it?.second)
@@ -97,7 +109,8 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                 true
             )
             // vm 可以启动界面，并携带 Bundle，接收方可调用 getBundle 获取
-            LiveDataBus.observe<Pair<Class<out Activity>, Bundle?>>(this,
+            LiveDataBus.observe<Pair<Class<out Activity>, Bundle?>>(
+                this,
                 mViewModel.mUiChangeLiveData.startActivityEventWithBundle!!,
                 Observer {
                     startActivity(it?.first, bundle = it?.second)
@@ -139,7 +152,60 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         if (isNeedLoadingDialog()) {
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
 
+            // 显示waitLoading
+            mViewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
+                it ?: return@Observer
+                if (it.isExtendsMsgDialog) {
+                    extUiEvent(it)
+                    return@Observer
+                }
+                when (it.type) {
+                    UIEventType.DIALOG_WAIT -> {
+                        waitDialog.hintMsg = it.msg
+                        (activity as? AppCompatActivity?)?.run {
+                            waitDialog.show(this)
+                        }
+                    }
+                    UIEventType.DIALOG_DISMISS -> {
+                        waitDialog.dismiss()
+                        msgDialog.dismiss()
+                    }
+                    UIEventType.DL_TIP_SUCCESS -> {
+                    }
+                    UIEventType.DL_TIP_FAIL -> {
+                    }
+                    UIEventType.DL_TIP_WARNING -> {
+                    }
+                    UIEventType.DIALOG_MSG -> {
+                        initMsgDialog(msgDialog, it)
+                        (activity as? AppCompatActivity?)?.run {
+                            waitDialog.show(this)
+                        }
+                    }
+                }
+            })
         }
+    }
+
+
+    open fun extUiEvent(it: UIEvent) {
+
+    }
+
+
+    open fun initMsgDialog(msgDialog: MsgDialog, it: UIEvent) {
+        msgDialog.content = it.msg ?: ""
+        msgDialog.title = it.title ?: "温馨提示"
+
+        if (it.autoConfirm || it.confirmVoidCallback != null) msgDialog.confirm = BtnConfig(
+            click = it.confirmVoidCallback,
+            text = it.confirmText
+        )
+        if (it.autoCancel || it.cancelVoidCallback != null) msgDialog.cancel =
+            BtnConfig(
+                click = it.cancelVoidCallback,
+                text = it.cancelText
+            )
     }
 
     @CallSuper
@@ -252,9 +318,9 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             }
         }
     }
-    
-    val bindingIsInit :Boolean
-    get() = this::mBinding.isInitialized
+
+    val bindingIsInit: Boolean
+        get() = this::mBinding.isInitialized
 
     override fun onDestroy() {
         super.onDestroy()
