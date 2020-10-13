@@ -51,6 +51,12 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         savedInstanceState: Bundle?
     ): View? {
         mBinding = initBinding(inflater, container)
+        if (getLoadSirTarget() == this) {
+            mLoadService = LoadSir.getDefault().register(
+                contentView()
+            ) { onLoadSirReload() }
+            return mLoadService.loadLayout
+        }
         return contentView()
     }
 
@@ -212,10 +218,11 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     override fun initLoadSir() {
         // 只有目标不为空的情况才有实例化的必要
         if (getLoadSirTarget() != null) {
-            mLoadService = LoadSir.getDefault().register(
-                getLoadSirTarget()
-            ) { onLoadSirReload() }
-
+            if (!this::mLoadService.isInitialized) {
+                mLoadService = LoadSir.getDefault().register(
+                    getLoadSirTarget()
+                ) { onLoadSirReload() }
+            }
             mViewModel.mUiChangeLiveData.initLoadSirEvent()
             mViewModel.mUiChangeLiveData.loadSirEvent?.observe(this, Observer {
                 if (it == null) {
