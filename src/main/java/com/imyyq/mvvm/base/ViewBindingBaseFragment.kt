@@ -185,7 +185,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                     UIEventType.DIALOG_MSG -> {
                         initMsgDialog(msgDialog, it)
                         (activity as? AppCompatActivity?)?.run {
-                            waitDialog.show(this)
+                            msgDialog.show(this)
                         }
                     }
                 }
