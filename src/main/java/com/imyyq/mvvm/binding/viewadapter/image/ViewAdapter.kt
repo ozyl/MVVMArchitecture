@@ -1,16 +1,17 @@
 package com.imyyq.mvvm.binding.viewadapter.image
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
-import android.text.TextUtils
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.imyyq.mvvm.R
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.glide.RoundedCornersExt
 import com.imyyq.mvvm.utils.DensityUtil
+import com.imyyq.mvvm.utils.obtainColor
 
 @SuppressLint("CheckResult")
 @BindingAdapter(
@@ -18,7 +19,8 @@ import com.imyyq.mvvm.utils.DensityUtil
         "topLeftRoundingRadius",
         "topRightRoundingRadius",
         "bottomLeftRoundingRadius",
-        "bottomRightRoundingRadius"
+        "bottomRightRoundingRadius",
+        "tintColor"
     ],
     requireAll = false
 )
@@ -31,7 +33,8 @@ fun setImageUri(
     topLeftRoundingRadius: Int?,
     topRightRoundingRadius: Int?,
     bottomLeftRoundingRadius: Int?,
-    bottomRightRoundingRadius: Int?
+    bottomRightRoundingRadius: Int?,
+    tintColor:Int?
 ) {
     if (!url.isNullOrBlank()) {
         val newUrl = url.toIntOrNull() ?: url
@@ -71,7 +74,8 @@ fun setImageUri(
             }
         }
         request.apply(options).into(imageView)
-    } else {
-        imageView.setImageResource(0)
+    }
+    tintColor?.let {
+        imageView.imageTintList = ColorStateList.valueOf(tintColor)
     }
 }
