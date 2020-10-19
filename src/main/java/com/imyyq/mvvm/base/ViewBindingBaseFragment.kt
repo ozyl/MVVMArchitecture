@@ -20,6 +20,7 @@ import com.fenxiangbuy.dialog.WaitDialog
 import com.fenxiangbuy.dialog.data.model.BtnConfig
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
+import com.kingja.loadsir.callback.Callback
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
 import kotlinx.coroutines.GlobalScope
@@ -226,10 +227,10 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             mViewModel.mUiChangeLiveData.initLoadSirEvent()
             mViewModel.mUiChangeLiveData.loadSirEvent?.observe(this, Observer {
                 if (it == null) {
-                    mLoadService.showSuccess()
+                    showStatusSuccess()
                     onLoadSirSuccess()
                 } else {
-                    mLoadService.showCallback(it)
+                    showStatusCallback(it)
                     onLoadSirShowed(it)
                 }
             })
@@ -251,6 +252,21 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     ) {
         initStartActivityForResult()
         mStartActivityForResult.launch(Utils.getIntentByMapOrBundle(activity, clz, map, bundle))
+    }
+
+
+
+
+
+    fun showStatusCallback(it: Class<out Callback>?) {
+        if (this::mLoadService.isInitialized)
+        mLoadService.showCallback(it)
+    }
+
+
+    fun showStatusSuccess() {
+        if (this::mLoadService.isInitialized)
+        mLoadService.showSuccess()
     }
 
     private fun initStartActivityForResult() {

@@ -64,11 +64,23 @@ val commonGson: Gson = GsonBuilder().apply {
         adapter
     )
     registerTypeAdapter(
+        object : TypeToken<MutableMap<String, Any>>() {}.type,
+        adapter
+    )
+    registerTypeAdapter(
         object : TypeToken<Map<String, String>>() {}.type,
         adapter
     )
     registerTypeAdapter(
+        object : TypeToken<MutableMap<String, String>>() {}.type,
+        adapter
+    )
+    registerTypeAdapter(
         object : TypeToken<Map<Any, Any>>() {}.type,
+        adapter
+    )
+    registerTypeAdapter(
+        object : TypeToken<MutableMap<Any, Any>>() {}.type,
         adapter
     )
 }.create()
