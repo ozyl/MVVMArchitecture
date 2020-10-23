@@ -50,7 +50,7 @@ object GlobalConfig {
         }
         builder.addCallback(defCallback.newInstance())
         //设置默认状态页
-        builder.setDefaultCallback(defCallback)
+//        builder.setDefaultCallback(defCallback)
             .commit()
     }
 

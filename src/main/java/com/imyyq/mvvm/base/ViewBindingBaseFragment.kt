@@ -204,15 +204,18 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         msgDialog.content = it.msg ?: ""
         msgDialog.title = it.title ?: "温馨提示"
 
-        if (it.autoConfirm || it.confirmVoidCallback != null) msgDialog.confirm = BtnConfig(
-            click = it.confirmVoidCallback,
+
+        msgDialog.confirm.apply {
+            isAutoClose = it.autoConfirm
+            click = it.confirmVoidCallback
             text = it.confirmText
-        )
-        if (it.autoCancel || it.cancelVoidCallback != null) msgDialog.cancel =
-            BtnConfig(
-                click = it.cancelVoidCallback,
-                text = it.cancelText
-            )
+        }
+
+        msgDialog.cancel.apply {
+            isAutoClose = it.autoCancel
+            click = it.cancelVoidCallback
+            text = it.cancelText
+        }
     }
 
     @CallSuper

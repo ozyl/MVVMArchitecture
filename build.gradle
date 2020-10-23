@@ -94,8 +94,6 @@ dependencies {
     // 使用 Java8 替换 lifecycleCompiler，让 vm 可以感知 v 生命周期
     api Deps.lifecycleJava8
 
-    api Deps.parallaxBackLayout
-
     api Deps.logginginterceptor
 
     debugApi Deps.logUtil
@@ -105,7 +103,8 @@ dependencies {
     api Deps.mmkv
     api Deps.toast
     api project(':library-dialog')
-    
+    api project(':parallaxbacklayout')
+
     api AppDeps.autoSize
 
     // 监控应用的生命周期

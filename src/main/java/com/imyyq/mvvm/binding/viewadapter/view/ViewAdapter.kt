@@ -1,9 +1,11 @@
 package com.imyyq.mvvm.binding.viewadapter.view
 
 import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.http.HttpRequest
+import com.imyyq.mvvm.utils.DensityUtil.dp2px
 
 @BindingAdapter(
     value = ["onClickCommand", "isInterval", "intervalMilliseconds"],
@@ -51,4 +53,13 @@ fun isVisible(view: View, visibility: Boolean?, gone: Boolean?) {
     gone?.run {
         view.visibility = if (this) View.GONE else View.VISIBLE
     }
+}
+
+
+@BindingAdapter("android:layout_width","android:layout_height")
+fun setLayoutWidth(view: View, width: Float,height: Float) {
+    val params: ViewGroup.LayoutParams = view.layoutParams
+    params.width = width.dp2px()
+    params.height = height.dp2px()
+    view.layoutParams = params
 }

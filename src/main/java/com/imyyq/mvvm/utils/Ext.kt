@@ -101,6 +101,7 @@ fun <T> launch(
         try {
             HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
         } catch (e: Exception) {
+            LogUtils.e(e)
             onFailed?.let { HttpHandler.handleException(e, it) }
         } finally {
             onComplete?.invoke()

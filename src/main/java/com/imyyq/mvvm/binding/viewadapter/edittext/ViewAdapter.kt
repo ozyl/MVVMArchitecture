@@ -2,9 +2,11 @@ package com.imyyq.mvvm.binding.viewadapter.edittext
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.ViewGroup
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import com.imyyq.mvvm.binding.command.BindingConsumer
+
 
 /**
  * EditText输入文字改变的监听
@@ -34,4 +36,14 @@ fun addTextChangedListener(
 
         override fun afterTextChanged(editable: Editable) {}
     })
+}
+
+@BindingAdapter(value = ["focusChanged"], requireAll = false)
+fun addFocusChangedListener(
+    editText: EditText,
+    focusChanged: BindingConsumer<Boolean>?
+) {
+    focusChanged?.run {
+        editText.setOnFocusChangeListener { view, b -> this.call(b) }
+    }
 }
