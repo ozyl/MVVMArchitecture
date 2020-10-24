@@ -33,8 +33,10 @@ fun obtainDrawable(resId: Int): Drawable? {
     return ContextCompat.getDrawable(BaseApp.getInstance(), resId)
 }
 
-fun showToast(msg: String) {
-    ToastUtils.show(msg)
+fun showToast(msg: String?) {
+    if (!msg.isNullOrBlank()) {
+        ToastUtils.show(msg)
+    }
 }
 
 fun showToastResId(@StringRes resId: Int, vararg formatArgs: Any) {
