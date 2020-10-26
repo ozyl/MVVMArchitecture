@@ -31,7 +31,8 @@ data class UIEvent(
     var confirmText:String?=null,
     var cancelText:String?=null,
     var time:Int?=null,
-    var extModel: Any?=null
+    var extModel: Any?=null,
+    val isCancelable:Boolean=true
 )
 
 

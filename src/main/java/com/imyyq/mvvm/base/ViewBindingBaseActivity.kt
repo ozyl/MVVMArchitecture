@@ -15,9 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
 import com.fenxiangbuy.dialog.MsgDialog
 import com.fenxiangbuy.dialog.WaitDialog
-import com.fenxiangbuy.dialog.data.model.BtnConfig
 import com.github.anzewei.parallaxbacklayout.ParallaxBack
-import com.imyyq.mvvm.R
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.callback.Callback
@@ -53,8 +51,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
-        initViewObservable()
         initLoadSir()
+        initViewObservable()
         initData()
     }
 
@@ -175,6 +173,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
                         waitDialog.hintMsg = it.msg
+                        waitDialog.isCancelable =it.isCancelable
                         waitDialog.show(this)
                     }
                     UIEventType.DIALOG_DISMISS -> {
@@ -203,6 +202,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     open fun initMsgDialog(msgDialog: MsgDialog, it: UIEvent) {
         msgDialog.content = it.msg ?: ""
         msgDialog.title = it.title ?: "温馨提示"
+        msgDialog.isCancelable = it.isCancelable
 
         msgDialog.confirm.apply {
             isAutoClose = it.autoConfirm
