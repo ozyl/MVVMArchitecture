@@ -34,6 +34,7 @@ object InputMethodUtil {
      * @param editText 指定的EditText
      */
     fun showInputMethod(editText: EditText) {
+        focusable(editText)
         // 弹出键盘
         editText.postDelayed({
             val methodManager = BaseApp.getInstance().getSystemService(

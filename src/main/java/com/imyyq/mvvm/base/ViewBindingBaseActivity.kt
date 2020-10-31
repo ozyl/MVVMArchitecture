@@ -51,8 +51,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
-        initLoadSir()
         initViewObservable()
+        initLoadSir()
         initData()
     }
 
@@ -70,6 +70,10 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
 
     open fun contentView() = mBinding.root
+
+
+    val bindingIsInit: Boolean
+        get() = this::mBinding.isInitialized
 
     @CallSuper
     override fun initUiChangeLiveData() {
@@ -160,7 +164,12 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 true
             )
         }
-
+        if (readyCompleteListener!=null){
+            mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
+            mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
+                if (it==true)readyCompleteListener?.invoke()
+            })
+        }
         if (isNeedLoadingDialog()) {
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
             // 显示waitLoading
@@ -194,6 +203,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
             })
         }
     }
+
+    open val readyCompleteListener:(()->Unit)?=null
 
     open fun extUiEvent(it: UIEvent) {
 

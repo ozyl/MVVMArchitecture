@@ -107,6 +107,21 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
                 }
             }
         }
+        initData(owner)
+        vmReadyComplete()
+    }
+
+    
+    open fun initData(owner: LifecycleOwner){
+
+    }
+
+    private fun vmReadyComplete(){
+        if (isInUIThread()) {
+            mUiChangeLiveData.repositoryReadyCompleteEvent?.value = true
+        } else {
+            mUiChangeLiveData.repositoryReadyCompleteEvent?.postValue(true)
+        }
     }
 
     @CallSuper
@@ -181,7 +196,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
 
     // 以下是内嵌加载中布局相关的 =========================================================
 
-    fun showLoadSirSuccess() {
+    open fun showLoadSirSuccess() {
         CheckUtil.checkLoadSirEvent(mUiChangeLiveData.loadSirEvent)
         if (isInUIThread()) {
             mUiChangeLiveData.loadSirEvent?.value = null
@@ -190,7 +205,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         }
     }
 
-    fun showLoadSir(clz: Class<out Callback>) {
+    open fun showLoadSir(clz: Class<out Callback>) {
         CheckUtil.checkLoadSirEvent(mUiChangeLiveData.loadSirEvent)
         if (isInUIThread()) {
             mUiChangeLiveData.loadSirEvent?.value = clz
@@ -198,6 +213,8 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
             mUiChangeLiveData.loadSirEvent?.postValue(clz)
         }
     }
+    
+    val hasLoadSir get() =  mUiChangeLiveData.loadSirEvent!=null
 
     // 以下是界面开启和结束相关的 =========================================================
 
@@ -273,6 +290,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         var startActivityForResultEvent: String? = null
         var startActivityForResultEventWithMap: String? = null
         var startActivityForResultEventWithBundle: String? = null
+        var repositoryReadyCompleteEvent: SingleLiveEvent<Boolean?>? = null
 
         var finishEvent: String? = null
         var setResultEvent: String? = null
@@ -285,6 +303,10 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
 
         fun initLoadingDialogEvent() {
             UIEvent = SingleLiveEvent()
+        }
+
+        fun initRepositoryReadyCompleteEvent(){
+            repositoryReadyCompleteEvent = SingleLiveEvent()
         }
 
         fun initStartActivityForResultEvent() {

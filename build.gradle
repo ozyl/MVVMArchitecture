@@ -135,7 +135,7 @@ dependencies {
     checkMVVMConfigProperty(IncludeLib.room, "room")
     if (IncludeLib.room) {
         api Deps.roomRuntime
-        // kapt Deps.roomCompiler
+        kapt Deps.roomCompiler
     } else {
         compileOnly Deps.roomRuntime
     }
