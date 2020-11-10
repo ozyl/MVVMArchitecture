@@ -12,6 +12,12 @@ import javax.net.ssl.SSLHandshakeException
 object HttpHandler {
 
 
+    interface HttpFailedCall{
+        fun <T> handle(entity:IBaseResponse<T>):Boolean
+    }
+
+    var failedCall:HttpFailedCall?=null
+
     /**
      * 处理请求结果
      *
@@ -39,14 +45,18 @@ object HttpHandler {
             return
         }
         // 请求成功
-        if (entity.isSuccess()) {
-            // 回调成功
-            onSuccess?.invoke()
-            // 实体不为 null 才有价值
-            entity.data()?.let { onResult?.invoke(it) }
-        } else {
-            // 失败了
-            onFailed?.invoke(code, msg, entity.data())
+        when {
+            entity.isSuccess() -> {
+                // 回调成功
+                onSuccess?.invoke()
+                // 实体不为 null 才有价值
+                entity.data()?.let { onResult?.invoke(it) }
+            }
+            else -> {
+                if (failedCall?.handle(entity) != false){
+                    onFailed?.invoke(code, msg, entity.data())
+                }
+            }
         }
     }
 

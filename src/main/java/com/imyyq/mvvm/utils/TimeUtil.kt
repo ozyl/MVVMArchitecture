@@ -2,11 +2,33 @@ package com.imyyq.mvvm.utils
 
 import android.annotation.SuppressLint
 import androidx.annotation.IntDef
-import java.lang.annotation.RetentionPolicy
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+
+object DateFormat {
+    // 日期格式
+    const val DATE_FORMAT = "yyyy-MM-dd"
+    const val TIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    const val TIME_FORMAT_T = "yyyy-MM-dd'T'HH:mm:ss"
+    const val FORMAT_YYYY_MM = "yyyy-MM"
+    const val FORMAT_YYYY_MM_DD = "yyyyMMdd"
+    const val FORMAT_YYYY = "yyyy"
+    const val FORMAT_HH_MM = "HH:mm"
+    const val FORMAT_HH_MM_SS = "HH:mm:ss"
+    const val FORMAT_MM_SS = "mm:ss"
+    const val FORMAT_MM_DD_HH_MM = "MM-dd HH:mm"
+    const val FORMAT_MM_DD_HH_MM_SS = "MM-dd HH:mm:ss"
+    const val FORMAT_YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm"
+    const val FORMAT_YYYY2MM2DD = "yyyy.MM.dd"
+    const val FORMAT_YYYY2MM2DD_HH_MM = "yyyy.MM.dd HH:mm"
+    const val FORMAT_MMCDD_HH_MM = "MM月dd日 HH:mm"
+    const val FORMAT_MMCDD = "MM月dd日"
+    const val FORMAT_YYYYCMMCDD = "yyyy年MM月dd日"
+    const val FORMAT_YYYY1MM1DD = "yyyy/MM/dd"
+}
+
 
 /**
  * <pre>
