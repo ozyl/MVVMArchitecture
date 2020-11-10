@@ -82,6 +82,13 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         } else {
             initViewModel(this)
         }
+
+        if (readyCompleteListener!=null){
+            mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
+            mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
+                if (it==true)readyCompleteListener?.invoke()
+            })
+        }
         // 让 vm 可以感知 v 的生命周期
         lifecycle.addObserver(mViewModel)
     }
@@ -125,6 +132,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                 true
             )
         }
+
         if (isViewModelNeedStartForResult()) {
             mViewModel.mUiChangeLiveData.initStartActivityForResultEvent()
 
@@ -257,6 +265,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         mStartActivityForResult.launch(Utils.getIntentByMapOrBundle(activity, clz, map, bundle))
     }
 
+    open val readyCompleteListener:(()->Unit)?=null
 
 
 

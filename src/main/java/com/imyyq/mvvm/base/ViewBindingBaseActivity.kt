@@ -64,6 +64,13 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         setContentView(contentView())
         mViewModel = initViewModel(this)
         mViewModel.mIntent = getArgumentsIntent()
+
+        if (readyCompleteListener!=null){
+            mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
+            mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
+                if (it==true)readyCompleteListener?.invoke()
+            })
+        }
         // 让 vm 可以感知 v 的生命周期
         lifecycle.addObserver(mViewModel)
     }
@@ -163,12 +170,6 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 },
                 true
             )
-        }
-        if (readyCompleteListener!=null){
-            mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
-            mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
-                if (it==true)readyCompleteListener?.invoke()
-            })
         }
         if (isNeedLoadingDialog()) {
             mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
