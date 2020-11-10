@@ -62,7 +62,7 @@ object HttpHandler {
         }
         return when (e) {
             is HttpException -> {
-                onFailed(e.code(), e.message(), null)
+                onFailed(netException, msgNotHttpException, null)
             }
             is UnknownHostException, is CertPathValidatorException, is SSLHandshakeException, is SocketTimeoutException -> {
                 onFailed(netException, msgNotHttpException, null)
