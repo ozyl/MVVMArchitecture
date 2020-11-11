@@ -67,9 +67,6 @@ object HttpHandler {
         e: Exception,
         onFailed: (code: Int, msg: String?, data: Nothing?) -> Unit
     ) {
-        if (GlobalConfig.gIsDebug) {
-            e.printStackTrace()
-        }
         return when (e) {
             is HttpException -> {
                 onFailed(netException, msgNotHttpException, null)

@@ -14,6 +14,7 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.hjq.toast.ToastUtils
 import com.imyyq.mvvm.app.BaseApp
+import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.BaseViewModel
 import com.imyyq.mvvm.base.DataBindingBaseActivity
 import com.imyyq.mvvm.base.IBaseResponse
@@ -103,7 +104,9 @@ fun <T> launch(
         try {
             HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
         } catch (e: Exception) {
-            LogUtils.e(e)
+            if (GlobalConfig.gIsDebug) {
+                e.printStackTrace()
+            }
             onFailed?.let { HttpHandler.handleException(e, it) }
         } finally {
             onComplete?.invoke()
