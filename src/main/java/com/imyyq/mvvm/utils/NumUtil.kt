@@ -25,12 +25,11 @@ object NumUtil {
         return originValue.setScale(scale,roundType).toString()
     }
 
-    fun Double.multiply(double: Double):BigDecimal{
+    fun Number.multiply(double: Number):BigDecimal{
         return BigDecimal(this.toString()).multiply(BigDecimal(double.toString()))
     }
-
-    fun Int.multiply(double: Double):BigDecimal{
-        return BigDecimal(this.toString()).multiply(BigDecimal(double.toString()))
+    fun Number.divide(double: Number):BigDecimal{
+        return BigDecimal(this.toString()).divide(BigDecimal(double.toString()))
     }
 
 }
