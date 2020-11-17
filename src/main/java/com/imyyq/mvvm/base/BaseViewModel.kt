@@ -79,8 +79,8 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
     /**
      * 发起协程，让协程和 UI 相关
      */
-    fun launchUI(block: suspend CoroutineScope.() -> Unit) {
-        viewModelScope.launch { block() }
+    fun launchUI(block: suspend CoroutineScope.() -> Unit): Job {
+        return viewModelScope.launch { block() }
     }
 
     /**

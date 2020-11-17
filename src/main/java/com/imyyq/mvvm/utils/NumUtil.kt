@@ -29,7 +29,7 @@ object NumUtil {
         return BigDecimal(this.toString()).multiply(BigDecimal(double.toString()))
     }
     fun Number.divide(double: Number):BigDecimal{
-        return BigDecimal(this.toString()).divide(BigDecimal(double.toString()))
+        return BigDecimal(this.toString()).divide(BigDecimal(double.toString()),2,BigDecimal.ROUND_HALF_UP)
     }
 
 }

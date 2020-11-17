@@ -39,7 +39,7 @@ android {
     }
 
     // Gradle Plugin 4.0 及以上
-    buildFeatures{
+    buildFeatures {
         dataBinding = true
         viewBinding = true
     }
@@ -79,7 +79,7 @@ dependencies {
     api Deps.appcompat
     // 约束布局
     api Deps.constraintLayout
-    
+
     // 以下三个是为了使用最新的特性
     api Deps.activity
     api Deps.activityKTX
@@ -98,7 +98,7 @@ dependencies {
 
     debugApi Deps.logUtil
     releaseApi Deps.logUtilNoOp
-    
+
     api Deps.log4a
     api Deps.mmkv
     api Deps.toast
@@ -155,7 +155,7 @@ dependencies {
     checkMVVMConfigProperty(IncludeLib.glide, "glide")
     if (IncludeLib.glide) {
         api Deps.glide
-        // kapt Deps.glideCompiler
+        kapt Deps.glideCompiler
     } else {
         compileOnly Deps.glide
     }

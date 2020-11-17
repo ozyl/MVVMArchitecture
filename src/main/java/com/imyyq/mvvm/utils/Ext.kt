@@ -34,6 +34,10 @@ fun obtainDrawable(resId: Int): Drawable? {
     return ContextCompat.getDrawable(BaseApp.getInstance(), resId)
 }
 
+fun obtainDimens(resId: Int): Float {
+    return BaseApp.getInstance().resources?.getDimension(resId)?:0f
+}
+
 fun showToast(msg: String?) {
     if (!msg.isNullOrBlank()) {
         ToastUtils.show(msg)
