@@ -6,6 +6,7 @@ import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.security.cert.CertPathValidatorException
+import java.util.concurrent.CancellationException
 import javax.net.ssl.SSLHandshakeException
 
 
@@ -73,6 +74,9 @@ object HttpHandler {
             }
             is UnknownHostException, is CertPathValidatorException, is SSLHandshakeException, is SocketTimeoutException -> {
                 onFailed(netException, msgNotHttpException, null)
+            }
+            is CancellationException ->{
+                onFailed(cancelException,"取消请求",null)
             }
             else -> {
                 onFailed(
