@@ -137,7 +137,11 @@ object LiveDataBus {
     /**
      * 发送粘性事件
      */
-    fun sendSticky(tag: Any, result: Any, inUiThread: Boolean = Looper.getMainLooper().thread == Thread.currentThread()) {
+    fun sendSticky(
+        tag: Any,
+        result: Any,
+        inUiThread: Boolean = Looper.getMainLooper().thread == Thread.currentThread()
+    ) {
         var list = mStickyLiveDataMap[tag]
         if (list == null) {
             list = mutableListOf()
@@ -153,7 +157,7 @@ object LiveDataBus {
                 liveData.postValue(result)
             }
         } else {
-            list.forEach {
+            MutableList(list.size) { list[it] }.forEach {
                 it.isValueValid = true
                 if (inUiThread) {
                     it.liveData.value = result
@@ -196,7 +200,11 @@ object LiveDataBus {
     /**
      * 发送消息，只要是相同的 tag，就会触发对应的 LiveData，不管这个 tag 是在哪里注册的。包括粘性事件，也可以接收普通的事件。
      */
-    fun send(tag: Any, result: Any, inUiThread: Boolean = Looper.getMainLooper().thread == Thread.currentThread()) {
+    fun send(
+        tag: Any,
+        result: Any,
+        inUiThread: Boolean = Looper.getMainLooper().thread == Thread.currentThread()
+    ) {
         mLiveDataMap.forEach {
             it.value.forEach inside@{ entry ->
                 if (entry.key == tag) {
