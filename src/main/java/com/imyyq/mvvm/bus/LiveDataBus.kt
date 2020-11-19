@@ -202,7 +202,7 @@ object LiveDataBus {
      */
     fun send(
         tag: Any,
-        result: Any,
+        result: Any?,
         inUiThread: Boolean = Looper.getMainLooper().thread == Thread.currentThread()
     ) {
         mLiveDataMap.forEach {
