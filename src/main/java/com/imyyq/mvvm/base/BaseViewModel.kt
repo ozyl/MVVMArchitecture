@@ -185,7 +185,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         }
     }
 
-    fun <T> refreshEvent(data:T,event: MutableLiveData<T>?) {
+    fun <T> refreshEvent(data:T?,event: MutableLiveData<T>?) {
         if (isInUIThread()) {
             event?.value = data
         } else {

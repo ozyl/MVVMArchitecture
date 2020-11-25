@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * 只有一个观察者能收到通知，并且只有明确调用了 setValue 的时候才会发出通知。
  * 反复注册观察并不会触发重新通知。
  */
-class SingleLiveEvent<T> : MutableLiveData<T?>() {
+class SingleLiveEvent<T>(value:T?=null) : MutableLiveData<T?>(value) {
     private val mPending =
         AtomicBoolean(false)
 
