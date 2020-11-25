@@ -46,6 +46,7 @@ open class BaseApp : Application() {
         @JvmStatic
         fun initApp(app: Application) {
             Companion.app = app
+            AppUtil.syncIsDebug(app)
         }
 
         private fun initResource(app: Application) {

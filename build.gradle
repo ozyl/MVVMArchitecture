@@ -22,8 +22,6 @@ android {
         }
 
         debug {
-            ext.enableCrashlytics = false
-            ext.alwaysUpdateBuildId = false
             aaptOptions {
                 cruncherEnabled false
             }

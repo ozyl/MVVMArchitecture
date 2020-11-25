@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -81,7 +82,7 @@ object AppUtil {
 
     /**
      * 获取应用的信息，0代表是获取版本信息
-      */
+     */
     val defPackageInfo: PackageInfo?
         get() {
             val packageManager = BaseApp.getInstance().packageManager
@@ -134,7 +135,11 @@ object AppUtil {
     /**
      * 打开应用的详细信息设置
      */
-    fun gotoAppDetailsSettings(context: Context, requestCode: Int, packageName: String = context.packageName) {
+    fun gotoAppDetailsSettings(
+        context: Context,
+        requestCode: Int,
+        packageName: String = context.packageName
+    ) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.fromParts("package", packageName, null)
         if (context is Activity) {
@@ -210,4 +215,25 @@ object AppUtil {
             PackageManager.GET_META_DATA
         ).metaData
     }
+
+    private var isDebug: Boolean? = null
+
+    fun isDebug(): Boolean {
+        return isDebug ?: false
+    }
+
+
+
+    /**
+     * Sync lib debug with app's debug value. Should be called in module Application
+     *
+     * @param context Context
+     */
+    fun syncIsDebug(context: Context) {
+        if (isDebug == null) {
+            isDebug = (context.applicationInfo != null
+                    && context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0)
+        }
+    }
+
 }
