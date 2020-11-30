@@ -3,6 +3,7 @@ package com.imyyq.mvvm.app
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import com.imyyq.mvvm.R
+import com.imyyq.mvvm.utils.AppUtil
 import com.kingja.loadsir.callback.Callback
 import com.kingja.loadsir.core.LoadSir
 
@@ -17,7 +18,7 @@ object GlobalConfig {
      *
      * 建议打包提测的都开启保存。比如 beta 构建选项
      */
-    var gIsDebug = false
+    val gIsDebug by lazy { AppUtil.isDebug() }
 
     /**
      * activity 是否支持侧滑返回。
