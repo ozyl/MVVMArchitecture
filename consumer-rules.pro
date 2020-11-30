@@ -89,3 +89,82 @@
 -keepclassmembers class com.imyyq.mvvm.base.ViewBindingBaseFragment {
      protected * mBinding;
 }
+
+# 保护注解
+-keepattributes *Annotation*
+-keep class * extends java.lang.annotation.Annotation {*;}
+
+-keep class com.imyyq.mvvm.base.** { *; }
+-keep class * extends com.imyyq.mvvm.base.BaseModel
+
+#AndroidX
+
+-keep class com.google.android.material.** {*;}
+
+-keep class androidx.** {*;}
+
+-keep public class * extends androidx.**
+
+-keep interface androidx.** {*;}
+
+-dontwarn com.google.android.material.**
+
+-dontnote com.google.android.material.**
+
+-dontwarn androidx.**
+
+# 不混淆第三方引用的库
+-dontskipnonpubliclibraryclasses
+
+
+# 混淆采用的算法
+-optimizations !code/simplification/cast,!field/*,!class/merging/*
+
+#避免混淆自定义控件类的 get/set 方法和构造函数
+-keep public class * extends android.view.View{
+    *** get*();
+    void set*(***);
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+#避免混淆枚举类
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+#避免Parcelable混淆
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+#避免Serializable接口的子类中指定的某些成员变量和方法混淆
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    !static !transient <fields>;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
+#WebView混淆控制
+-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+    public *;
+}
+-keepclassmembers class * extends android.webkit.webViewClient {
+    public void *(android.webkit.WebView, java.lang.String, android.graphics.Bitmap);
+    public boolean *(android.webkit.WebView, java.lang.String);
+}
+-keepclassmembers class * extends android.webkit.webViewClient {
+    public void *(android.webkit.webView, jav.lang.String);
+}
+-keepattributes JavascriptInterface
+
+#Banner混淆
+-keep class com.youth.banner.** {
+    *;
+ }
