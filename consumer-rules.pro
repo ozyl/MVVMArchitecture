@@ -94,9 +94,6 @@
 -keepattributes *Annotation*
 -keep class * extends java.lang.annotation.Annotation {*;}
 
--keep class com.imyyq.mvvm.base.** { *; }
--keep class * extends com.imyyq.mvvm.base.BaseModel
-
 #AndroidX
 
 -keep class com.google.android.material.** {*;}

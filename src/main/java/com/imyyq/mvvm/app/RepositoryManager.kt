@@ -24,7 +24,7 @@ object RepositoryManager {
         }
         var repo = mRepoMap[clz]
         if (repo == null) {
-            repo = clz.newInstance()
+            repo = clz.getDeclaredConstructor().newInstance()
             mRepoMap[clz] = repo
         }
         return repo as M
