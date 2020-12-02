@@ -1,12 +1,5 @@
 package com.imyyq.mvvm.base
 
-import android.app.Dialog
-import android.view.View
-import android.widget.TextView
-import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
-import com.apkfuns.logutils.utils.Utils
-import com.fenxiangbuy.dialog.BaseDialog
 import com.imyyq.mvvm.app.GlobalConfig
 
 /**
@@ -37,5 +30,5 @@ data class UIEvent(
 
 
 enum class UIEventType {
-    DIALOG_WAIT, DIALOG_DISMISS, DL_TIP_SUCCESS, DL_TIP_FAIL,DL_TIP_WARNING,DIALOG_MSG
+    DIALOG_WAIT, DIALOG_DISMISS,DIALOG_MSG
 }

@@ -17,7 +17,6 @@ import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
 import com.fenxiangbuy.dialog.MsgDialog
 import com.fenxiangbuy.dialog.WaitDialog
-import com.fenxiangbuy.dialog.data.model.BtnConfig
 import com.imyyq.mvvm.bus.LiveDataBus
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.callback.Callback
@@ -184,12 +183,6 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                     UIEventType.DIALOG_DISMISS -> {
                         waitDialog.dismiss()
                         msgDialog.dismiss()
-                    }
-                    UIEventType.DL_TIP_SUCCESS -> {
-                    }
-                    UIEventType.DL_TIP_FAIL -> {
-                    }
-                    UIEventType.DL_TIP_WARNING -> {
                     }
                     UIEventType.DIALOG_MSG -> {
                         initMsgDialog(msgDialog, it)

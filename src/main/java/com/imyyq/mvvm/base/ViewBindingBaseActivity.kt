@@ -22,6 +22,7 @@ import com.kingja.loadsir.callback.Callback
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
 
+
 /**
  * 通过构造函数和泛型，完成 view 的初始化和 vm 的初始化，并且将它们绑定，
  */
@@ -68,7 +69,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         if (readyCompleteListener!=null){
             mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
             mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
-                if (it==true)readyCompleteListener?.invoke()
+                if (it == true) readyCompleteListener?.invoke()
             })
         }
         // 让 vm 可以感知 v 的生命周期
@@ -183,18 +184,12 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
                         waitDialog.hintMsg = it.msg
-                        waitDialog.isCancelable =it.isCancelable
+                        waitDialog.isCancelable = it.isCancelable
                         waitDialog.show(this)
                     }
                     UIEventType.DIALOG_DISMISS -> {
                         waitDialog.dismiss()
                         msgDialog.dismiss()
-                    }
-                    UIEventType.DL_TIP_SUCCESS -> {
-                    }
-                    UIEventType.DL_TIP_FAIL -> {
-                    }
-                    UIEventType.DL_TIP_WARNING -> {
                     }
                     UIEventType.DIALOG_MSG -> {
                         initMsgDialog(msgDialog, it)

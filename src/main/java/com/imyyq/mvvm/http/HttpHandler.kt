@@ -1,6 +1,5 @@
 package com.imyyq.mvvm.http
 
-import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
@@ -54,7 +53,7 @@ object HttpHandler {
                 entity.data()?.let { onResult?.invoke(it) }
             }
             else -> {
-                if (failedCall?.handle(entity) != false){
+                if (failedCall?.handle(entity) != true){
                     onFailed?.invoke(code, msg, entity.data())
                 }
             }
