@@ -49,6 +49,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (superOnCreateAfterIsContinue())return
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
@@ -56,6 +57,8 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         initLoadSir()
         initData()
     }
+
+    open fun superOnCreateAfterIsContinue(): Boolean = false
 
     abstract override fun initBinding(inflater: LayoutInflater, container: ViewGroup?): V
 

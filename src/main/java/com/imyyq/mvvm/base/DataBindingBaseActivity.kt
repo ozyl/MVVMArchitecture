@@ -27,6 +27,7 @@ abstract class DataBindingBaseActivity<V : ViewDataBinding, VM : BaseViewModel<o
 
     override fun onDestroy() {
         super.onDestroy()
+        if(bindingIsInit)
         mBinding.unbind()
     }
 }
