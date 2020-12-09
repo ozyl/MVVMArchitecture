@@ -5,33 +5,30 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import com.apkfuns.logutils.LogUtils
-import com.google.gson.*
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.hjq.toast.ToastUtils
 import com.imyyq.mvvm.app.BaseApp
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.BaseViewModel
-import com.imyyq.mvvm.base.DataBindingBaseActivity
 import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.HttpHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.lang.reflect.Type
 
 
 fun obtainColor(resId: Int): Int {
     return ContextCompat.getColor(BaseApp.getInstance(), resId)
 }
 
-fun obtainDrawable(resId: Int): Drawable? {
-    return ContextCompat.getDrawable(BaseApp.getInstance(), resId)
+fun obtainDrawable(resId: Int?): Drawable? {
+    return resId?.let {
+        ContextCompat.getDrawable(BaseApp.getInstance(), resId)
+    }
 }
 
 fun obtainDimens(resId: Int): Float {
