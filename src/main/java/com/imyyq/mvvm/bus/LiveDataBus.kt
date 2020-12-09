@@ -92,7 +92,7 @@ object LiveDataBus {
     fun <R : Any> observeSticky(
         registrants: Any,
         tag: Any,
-        observer: Observer<R>
+        observer: Observer<R?>
     ) {
         // 一个 tag 对应多个监听者
         var list = mStickyLiveDataMap[tag]
@@ -139,7 +139,7 @@ object LiveDataBus {
      */
     fun sendSticky(
         tag: Any,
-        result: Any,
+        result: Any?,
         inUiThread: Boolean = Looper.getMainLooper().thread == Thread.currentThread()
     ) {
         var list = mStickyLiveDataMap[tag]

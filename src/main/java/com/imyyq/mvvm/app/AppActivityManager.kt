@@ -18,7 +18,7 @@ object AppActivityManager {
         return mActivityList.isEmpty()
     }
 
-    fun get(clazz: Class<Activity>): Activity? {
+    fun get(clazz: Class<out Activity>): Activity? {
         checkEnabled()
         return mActivityList.find { it.javaClass == clazz }
     }
