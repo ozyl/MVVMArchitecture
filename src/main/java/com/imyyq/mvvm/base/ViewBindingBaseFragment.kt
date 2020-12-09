@@ -227,6 +227,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                 mLoadService = LoadSir.getDefault().register(
                     getLoadSirTarget()
                 ) { onLoadSirReload() }
+                mLoadService.showSuccess()
             }
             mViewModel.mUiChangeLiveData.initLoadSirEvent()
             mViewModel.mUiChangeLiveData.loadSirEvent?.observe(this, Observer {
