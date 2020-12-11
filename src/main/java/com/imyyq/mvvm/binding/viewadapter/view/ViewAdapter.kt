@@ -6,7 +6,6 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.databinding.BindingAdapter
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.http.HttpRequest
-import com.imyyq.mvvm.utils.DensityUtil.dp2px
 import kotlin.math.roundToInt
 
 
@@ -69,10 +68,15 @@ fun setBottomMargin(view: View, start: Float?,top: Float?,end: Float?,bottom: Fl
 }
 
 
-@BindingAdapter("android:layout_width", "android:layout_height")
-fun setLayoutWidth(view: View, width: Float, height: Float) {
+@BindingAdapter("android:layout_width")
+fun setLayoutWidth(view: View, width: Float) {
     val params: ViewGroup.LayoutParams = view.layoutParams
-    params.width = width.dp2px()
-    params.height = height.dp2px()
+    params.width = width.toInt()
+    view.layoutParams = params
+}
+@BindingAdapter("android:layout_height")
+fun setLayoutHeight(view: View, height: Float) {
+    val params: ViewGroup.LayoutParams = view.layoutParams
+    params.height = height.toInt()
     view.layoutParams = params
 }
