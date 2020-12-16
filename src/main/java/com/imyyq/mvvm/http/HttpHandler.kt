@@ -65,20 +65,21 @@ object HttpHandler {
      */
     fun handleException(
         e: Exception,
-        onFailed: (code: Int, msg: String?, data: Nothing?) -> Unit
+        onFailed: ((code: Int, msg: String?, data: Nothing?) -> Unit)?,
+        onCancel: (() -> Unit)?
     ) {
-        return when (e) {
+        when (e) {
             is HttpException -> {
-                onFailed(netException, msgNotHttpException, null)
+                onFailed?.invoke(netException, msgNotHttpException, null)
             }
             is UnknownHostException, is CertPathValidatorException, is SSLHandshakeException, is SocketTimeoutException -> {
-                onFailed(netException, msgNotHttpException, null)
+                onFailed?.invoke(netException, msgNotHttpException, null)
             }
             is CancellationException ->{
-                onFailed(cancelException,"取消请求",null)
+                onCancel?.invoke()
             }
             else -> {
-                onFailed(
+                onFailed?.invoke(
                     notHttpException,
                     msgException,
                     null

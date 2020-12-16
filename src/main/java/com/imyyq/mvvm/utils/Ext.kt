@@ -32,7 +32,7 @@ fun obtainDrawable(resId: Int?): Drawable? {
 }
 
 fun obtainDimens(resId: Int): Float {
-    return BaseApp.getInstance().resources?.getDimension(resId)?:0f
+    return BaseApp.getInstance().resources?.getDimension(resId) ?: 0f
 }
 
 fun showToast(msg: String?) {
@@ -99,7 +99,8 @@ fun <T> launch(
     onSuccess: (() -> Unit)? = null,
     onResult: ((t: T) -> Unit)? = null,
     onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
-    onComplete: (() -> Unit)? = null
+    onComplete: (() -> Unit)? = null,
+    onCancel: (() -> Unit)? = null,
 ): Job {
     return viewModelScope.launch {
         try {
@@ -108,7 +109,7 @@ fun <T> launch(
             if (GlobalConfig.gIsDebug) {
                 e.printStackTrace()
             }
-            onFailed?.let { HttpHandler.handleException(e, it) }
+            HttpHandler.handleException(e, onFailed, onCancel)
         } finally {
             onComplete?.invoke()
         }
