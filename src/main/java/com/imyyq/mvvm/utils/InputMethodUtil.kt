@@ -4,10 +4,7 @@ import android.content.Context
 import android.os.IBinder
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import com.imyyq.mvvm.app.BaseApp
-
 
 object InputMethodUtil {
 
@@ -53,14 +50,5 @@ object InputMethodUtil {
             editText.isFocusableInTouchMode = true
             editText.requestFocus()
         }, 200)
-    }
-
-    /**
-     * 隐藏
-     */
-    fun hideInputMethod(context: AppCompatActivity){
-        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.run {
-            hideSoftInputFromWindow(context.window.decorView.windowToken, 0)
-        }
     }
 }
