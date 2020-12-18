@@ -46,14 +46,26 @@ fun multiClickToChangeBaseUrl(
 
 /**
  * view的显示隐藏
+ * @param isShowStrict 该参数为true时只有在对应显示下状态的才会修改
+ * 避免visibility和gone冲突
  */
-@BindingAdapter(value = ["isVisible", "isGone"], requireAll = false)
-fun isVisible(view: View, visibility: Boolean?, gone: Boolean?) {
+@BindingAdapter(value = ["isVisible", "isGone","isShowStrict"], requireAll = false)
+fun isVisible(view: View, visibility: Boolean?, gone: Boolean?, isShowStrict: Boolean?, ){
     visibility?.run {
         view.visibility = if (this) View.VISIBLE else View.INVISIBLE
     }
     gone?.run {
-        view.visibility = if (this) View.GONE else View.VISIBLE
+        if (isShowStrict == true){
+            if (this){
+                view.visibility = View.GONE
+            }else{
+                if (view.visibility==View.GONE){
+                    view.visibility = View.VISIBLE
+                }
+            }
+        }else{
+            view.visibility = if (this) View.GONE else View.VISIBLE
+        }
     }
 }
 
