@@ -3,7 +3,6 @@ package com.imyyq.mvvm.binding.viewadapter.image
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
@@ -17,13 +16,16 @@ import com.imyyq.mvvm.utils.DensityUtil
 
 @SuppressLint("CheckResult")
 @BindingAdapter(
-    value = ["url", "placeholderRes", "errorRes", "roundingRadius",
+    value = [
+        "url", "placeholderRes", "errorRes", "roundingRadius",
         "topLeftRoundingRadius",
         "topRightRoundingRadius",
         "bottomLeftRoundingRadius",
         "bottomRightRoundingRadius",
         "tintColor",
-        "isCenterCrop"
+        "isCenterCrop",
+        "usePlaceholder",
+        "useError",
     ],
     requireAll = false
 )
@@ -38,24 +40,30 @@ fun setImageUri(
     bottomLeftRoundingRadius: Int?,
     bottomRightRoundingRadius: Int?,
     tintColor: Int?,
-    isCenterCrop: Boolean?
+    isCenterCrop: Boolean?,
+    usePlaceholder: Boolean?,
+    useError: Boolean?
 ) {
     if (model != null) {
         //使用Glide框架加载图片
         val request = Glide.with(imageView.context)
             .load(model)
         val options = RequestOptions().apply {
-            placeholder?.let {
-                placeholder(it)
-            } ?: run {
-                val placeholderRes = GlobalConfig.ImageView.placeholderRes
-                placeholderRes?.let { placeholder(placeholderRes) }
+            if (usePlaceholder != false) {
+                placeholder?.let {
+                    placeholder(it)
+                } ?: run {
+                    val placeholderRes = GlobalConfig.ImageView.placeholderRes
+                    placeholderRes?.let { placeholder(placeholderRes) }
+                }
             }
-            error?.let {
-                error(it)
-            } ?: kotlin.run {
-                val errorRes = GlobalConfig.ImageView.errorRes
-                errorRes?.let { error(errorRes) }
+            if (useError != false) {
+                error?.let {
+                    error(it)
+                } ?: kotlin.run {
+                    val errorRes = GlobalConfig.ImageView.errorRes
+                    errorRes?.let { error(errorRes) }
+                }
             }
             val transformList = mutableListOf<Transformation<Bitmap>>()
             isCenterCrop?.run {
