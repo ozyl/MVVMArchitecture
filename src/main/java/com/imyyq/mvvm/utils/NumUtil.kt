@@ -1,9 +1,6 @@
 package com.imyyq.mvvm.utils
 
 import java.math.BigDecimal
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.text.NumberFormat
 
 object NumUtil {
 
@@ -28,8 +25,8 @@ object NumUtil {
     fun Number.multiply(double: Number):BigDecimal{
         return BigDecimal(this.toString()).multiply(BigDecimal(double.toString()))
     }
-    fun Number.divide(double: Number):BigDecimal{
-        return BigDecimal(this.toString()).divide(BigDecimal(double.toString()),2,BigDecimal.ROUND_HALF_UP)
+    fun Number.divide(double: Number,scale: Int=2,roundingMode:Int=BigDecimal.ROUND_HALF_UP):BigDecimal{
+        return BigDecimal(this.toString()).divide(BigDecimal(double.toString()),2,roundingMode)
     }
 
 }
