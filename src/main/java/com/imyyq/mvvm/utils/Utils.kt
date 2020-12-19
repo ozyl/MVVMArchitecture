@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.os.Parcelable
 import android.view.View
+import android.view.ViewGroup
 import androidx.collection.ArrayMap
 import com.imyyq.mvvm.R
 import java.io.Serializable
@@ -217,5 +218,17 @@ object Utils {
         }
         bundle?.let { intent.putExtras(bundle) }
         return intent
+    }
+
+
+    /**
+     * 将View从父控件中移除
+     */
+    fun removeViewFormParent(v: View?) {
+        if (v == null) return
+        val parent = v.parent
+        if (parent is ViewGroup) {
+            parent.removeView(v)
+        }
     }
 }
