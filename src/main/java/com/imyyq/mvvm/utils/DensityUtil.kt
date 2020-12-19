@@ -1,6 +1,5 @@
 package com.imyyq.mvvm.utils
 
-import android.util.TypedValue
 import com.imyyq.mvvm.app.BaseApp
 import me.jessyan.autosize.utils.AutoSizeUtils
 import java.math.BigDecimal
@@ -44,8 +43,9 @@ object DensityUtil {
             Double::class.java -> value.toDouble()
             Long::class.java -> value.toLong()
             java.lang.Float::class.java -> value.toFloat()
+            Float::class.java -> value.toFloat()
             BigDecimal::class.java -> value.toBigDecimal()
-            else -> throw Exception("未处理该类型")
+            else -> throw Exception("未处理该类型${T::class.java}")
         } as T
     }
 }
