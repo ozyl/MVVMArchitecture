@@ -1,6 +1,7 @@
 package com.imyyq.mvvm.app
 
 import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * App 全局 Activity 管理器，采用 registerActivityLifecycleCallbacks 监听所有的 Activity 的创建和销毁。
@@ -29,6 +30,10 @@ object AppActivityManager {
             return mActivityList.last()
         }
         return null
+    }
+
+    fun currentAppCompatActivity(): AppCompatActivity? {
+        return current() as? AppCompatActivity
     }
 
     fun finishCurrentActivity() {

@@ -52,13 +52,16 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     ): View? {
         mBinding = initBinding(inflater, container)
         if (getLoadSirTarget() == this) {
-            mLoadService = LoadSir.getDefault().register(
+            mLoadService = getLoadSir().register(
                 contentView()
             ) { onLoadSirReload() }
             return mLoadService.loadLayout
         }
         return contentView()
     }
+
+    open fun getLoadSir() = LoadSir.getDefault()
+
 
     open fun contentView() = mBinding.root
 
