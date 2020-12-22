@@ -25,7 +25,8 @@ data class UIEvent(
     var cancelText:String?=null,
     var time:Int?=null,
     var extModel: Any?=null,
-    val isCancelable:Boolean=true
+    val isCancelable:Boolean=true,
+    val tag:String?=null
 )
 
 

@@ -85,10 +85,10 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             initViewModel(this)
         }
 
-        if (readyCompleteListener!=null){
+        if (readyCompleteListener != null) {
             mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
             mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
-                if (it==true)readyCompleteListener?.invoke()
+                if (it == true) readyCompleteListener?.invoke()
             })
         }
         // 让 vm 可以感知 v 的生命周期
@@ -188,9 +188,15 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                         msgDialog.dismiss()
                     }
                     UIEventType.DIALOG_MSG -> {
-                        initMsgDialog(msgDialog, it)
+                        val dialog =
+                            if (it.tag != null) {
+                                MsgDialog()
+                            } else {
+                                msgDialog
+                            }
+                        initMsgDialog(dialog, it)
                         (activity as? AppCompatActivity?)?.run {
-                            msgDialog.show(this)
+                            dialog.show(this)
                         }
                     }
                 }
@@ -262,20 +268,18 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         mStartActivityForResult.launch(Utils.getIntentByMapOrBundle(activity, clz, map, bundle))
     }
 
-    open val readyCompleteListener:(()->Unit)?=null
-
-
+    open val readyCompleteListener: (() -> Unit)? = null
 
 
     fun showStatusCallback(it: Class<out Callback>?) {
         if (this::mLoadService.isInitialized)
-        mLoadService.showCallback(it)
+            mLoadService.showCallback(it)
     }
 
 
     fun showStatusSuccess() {
         if (this::mLoadService.isInitialized)
-        mLoadService.showSuccess()
+            mLoadService.showSuccess()
     }
 
     private fun initStartActivityForResult() {
