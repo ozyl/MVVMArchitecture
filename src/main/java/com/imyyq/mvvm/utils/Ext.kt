@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.hjq.toast.ToastUtils
 import com.imyyq.mvvm.app.BaseApp
@@ -56,6 +58,17 @@ fun obtainString(@StringRes resId: Int, vararg formatArgs: Any): String {
 
 inline fun <reified T> String.toBean(): T =
     commonGson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+
+val String?.isJson: Boolean
+    get() {
+        this?:return false
+        return try {
+            this.toBean<JsonElement>()
+            true
+        } catch (ex: JsonSyntaxException) {
+            false
+        }
+    }
 
 inline fun <reified K, reified V> Any.toMap(): Map<K, V> {
     return commonGson.toJson(this).toBean()
