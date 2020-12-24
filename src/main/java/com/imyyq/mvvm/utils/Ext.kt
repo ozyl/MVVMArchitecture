@@ -56,8 +56,8 @@ fun obtainString(@StringRes resId: Int, vararg formatArgs: Any): String {
     return BaseApp.getInstance().getString(resId, *formatArgs)
 }
 
-inline fun <reified T> String.toBean(): T =
-    commonGson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+inline fun <reified T> String.toBean(gson:Gson=commonGson): T =
+    gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
 
 val String?.isJson: Boolean
     get() {
