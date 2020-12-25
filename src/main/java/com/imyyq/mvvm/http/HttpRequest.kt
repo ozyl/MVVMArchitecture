@@ -4,14 +4,13 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.collection.ArrayMap
-import boolean
 import com.apkfuns.logutils.LogUtils
 import com.imyyq.mvvm.BuildConfig
 import com.imyyq.mvvm.R
+import com.imyyq.mvvm.app.AppActivityManager
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.interceptor.HeaderInterceptor
-import com.imyyq.mvvm.utils.AppUtil
 import com.imyyq.mvvm.utils.Utils
 import com.safframework.http.interceptor.LoggingInterceptor
 import mmkv
@@ -22,6 +21,7 @@ import okhttp3.Request
 import retrofit2.*
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import string
 import java.io.IOException
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
  */
 object HttpRequest {
 
-    private var isSave by mmkv.boolean(key ="is_save", defaultValue = false)
+    const val MODIFY_BASE_URL_KEY = "modifyBaseUrl"
 
     // 缓存 service
     private val mServiceMap = ArrayMap<String, Any>()
@@ -52,7 +52,8 @@ object HttpRequest {
     /**
      * 存储 baseUrl，以便可以动态更改
      */
-    private lateinit var mBaseUrlMap: ArrayMap<String, String>
+    private var spModifyBaseUrl by mmkv.string(MODIFY_BASE_URL_KEY)
+    private lateinit var modifyBaseUrl: String
 
     /**
      * 请求超时时间，秒为单位
@@ -104,15 +105,17 @@ object HttpRequest {
 
             // 日志拦截器，是否打印由 LogUtil 控制
             httpClientBuilder
-                .addInterceptor(LoggingInterceptor.Builder()
-                    .loggable(BuildConfig.DEBUG)
-                    .request()
-                    .response()
-                    .hideVerticalLine()
-                    .requestTag("Request")
-                    .responseTag("Response")
-                    //.hideVerticalLine()// 隐藏竖线边框
-                    .build())
+                .addInterceptor(
+                    LoggingInterceptor.Builder()
+                        .loggable(BuildConfig.DEBUG)
+                        .request()
+                        .response()
+                        .hideVerticalLine()
+                        .requestTag("Request")
+                        .responseTag("Response")
+                        //.hideVerticalLine()// 隐藏竖线边框
+                        .build()
+                )
             val client = httpClientBuilder.build()
             val builder = Retrofit.Builder().client(client)
                 // 基础url
@@ -120,39 +123,38 @@ object HttpRequest {
                 // JSON解析
                 .addConverterFactory(GsonConverterFactory.create())
             if (GlobalConfig.gIsNeedChangeBaseUrl) {
-                if (!this::mBaseUrlMap.isInitialized) {
-                    mBaseUrlMap = ArrayMap()
-                }
-                // 将 url 缓存起来
-                if (isSave) {
-                    mBaseUrlMap[host] = mmkv.decodeString(host);
-                } else {
-                    mBaseUrlMap[host] = ""
+                if (!this::modifyBaseUrl.isInitialized) {
+                    modifyBaseUrl = spModifyBaseUrl ?: ""
                 }
                 builder.callFactory {
                     LogUtils.i("HttpRequest getService: old ${it.url()}")
-                    mBaseUrlMap.forEach { entry ->
-                        val key = entry.key
-                        var value = entry.value
-                        // 找到 url 并且需要更改
+                    if (modifyBaseUrl.isNotBlank()) {
                         val url = it.url().toString()
-                        if (url.startsWith(key) && value.isNotEmpty()) {
-                            // 防止尾缀有问题
-                            if (key.endsWith("/") && !value.endsWith("/")) {
-                                value += "/"
-                            } else if (!key.endsWith("/") && value.endsWith("/")) {
-                                value = value.substring(0, value.length - 1)
-                            }
+                        // 防止尾缀有问题
+                        if (mDefaultBaseUrl.endsWith("/") && !modifyBaseUrl.endsWith("/")) {
+                            modifyBaseUrl += "/"
+                        } else if (!mDefaultBaseUrl.endsWith("/") && modifyBaseUrl.endsWith("/")) {
+                            modifyBaseUrl = modifyBaseUrl.substring(0, modifyBaseUrl.length - 1)
+                        }
+                        if (!url.startsWith(modifyBaseUrl)){
                             // 替换 url 并创建新的 call
                             val newRequest: Request =
                                 it.newBuilder()
-                                    .url(HttpUrl.get(url.replaceFirst(key, value)))
+                                    .url(
+                                        HttpUrl.get(
+                                            url.replace(
+                                                mDefaultBaseUrl,
+                                                modifyBaseUrl
+                                            )
+                                        )
+                                    )
                                     .build()
                             LogUtils.i("HttpRequest getService: new ${newRequest.url()}")
-                            return@callFactory client.newCall(newRequest)
-                        }
+                            client.newCall(newRequest)
+                        }else client.newCall(it)
+                    } else {
+                        client.newCall(it)
                     }
-                    client.newCall(it)
                 }
             }
             // Kotlin 使用协程，Java 使用 rx
@@ -184,13 +186,13 @@ object HttpRequest {
 
 
     @JvmStatic
-    fun <T> getService(cls: Class<T>,vararg interceptors: Interceptor?):T{
+    fun <T> getService(cls: Class<T>, vararg interceptors: Interceptor?): T {
         if (!this::mDefaultBaseUrl.isInitialized) {
             throw RuntimeException("必须初始化 mBaseUrl")
         }
         if (this::mDefaultHeader.isInitialized) {
             val headers = HeaderInterceptor(mDefaultHeader)
-            return getService(cls, mDefaultBaseUrl, headers,*interceptors)
+            return getService(cls, mDefaultBaseUrl, headers, *interceptors)
         }
         return getService(cls, mDefaultBaseUrl, *interceptors)
     }
@@ -256,70 +258,53 @@ object HttpRequest {
             return
         }
         Utils.multiClickListener(view, frequency) {
-            if (!this::mBaseUrlMap.isInitialized) {
-                return@multiClickListener
+            showChangeBaseUrlDialog()
+        }
+    }
+
+    fun showChangeBaseUrlDialog() {
+        AppActivityManager.currentAppCompatActivity()?.let { activity ->
+
+            val layout = LinearLayout(activity)
+            layout.orientation = LinearLayout.VERTICAL
+            val textView = TextView(activity).apply {
+                text = mDefaultBaseUrl
             }
-            AppUtil.getActivityByView(view)?.let { activity ->
-                val tvList = mutableListOf<TextView>()
-                val etList = mutableListOf<EditText>()
-
-                val layout = LinearLayout(activity)
-                layout.orientation = LinearLayout.VERTICAL
-
-                mBaseUrlMap.forEach { entry ->
-                    val textView = TextView(activity)
-                    val edit = EditText(activity)
-
-                    textView.text = entry.key
-                    edit.setText(if (entry.value.isNotEmpty()) entry.value else entry.key)
-                    edit.selectAll()
-
-                    layout.addView(textView)
-                    layout.addView(edit)
-
-                    tvList.add(textView)
-                    etList.add(edit)
-                }
-
-                val btn = Button(activity)
-                btn.text = activity.getString(R.string.restore)
-                btn.setOnClickListener {
-                    tvList.forEachIndexed { index, textView ->
-                        etList[index].setText(textView.text.toString())
-                    }
-                }
-                layout.addView(btn)
-
-                val checkBox = CheckBox(activity)
-                checkBox.text = activity.getString(R.string.effective_next_time)
-                checkBox.isChecked = isSave
-                layout.addView(checkBox)
-
-                val editDialog = AlertDialog.Builder(activity)
-                editDialog.setView(layout)
-
-                editDialog.setPositiveButton(R.string.confirm) { dialog, _ ->
-                    tvList.forEachIndexed { index, textView ->
-                        mBaseUrlMap[textView.text.toString()] = etList[index].text.toString()
-                    }
-                    checkBox.isChecked.apply {
-                        isSave = this
-
-                        if (this) {
-                            mBaseUrlMap.forEach { entry ->
-                                mmkv.encode(entry.key, entry.value)
-                            }
-                        } else {
-                            mBaseUrlMap.forEach { entry ->
-                                mmkv.encode(entry.key, "")
-                            }
-                        }
-                    }
-                    dialog.dismiss()
-                }
-
-                editDialog.create().show()
+            val editView = EditText(activity).apply {
+                setText(if (modifyBaseUrl.isBlank()) mDefaultBaseUrl else modifyBaseUrl)
             }
+
+            layout.addView(textView)
+            layout.addView(editView)
+
+            val btn = Button(activity)
+            btn.text = activity.getString(R.string.restore)
+            btn.setOnClickListener {
+                editView.setText(mDefaultBaseUrl)
+            }
+            layout.addView(btn)
+
+            val checkBox = CheckBox(activity)
+            checkBox.text = activity.getString(R.string.effective_next_time)
+            checkBox.isChecked = !spModifyBaseUrl.isNullOrBlank()
+            layout.addView(checkBox)
+
+            val editDialog = AlertDialog.Builder(activity)
+            editDialog.setView(layout)
+
+            editDialog.setPositiveButton(R.string.confirm) { dialog, _ ->
+                modifyBaseUrl = editView.text.toString()
+                checkBox.isChecked.apply {
+                    spModifyBaseUrl = if (this) {
+                        modifyBaseUrl
+                    } else {
+                        null
+                    }
+                }
+                dialog.dismiss()
+            }
+
+            editDialog.create().show()
         }
     }
 }

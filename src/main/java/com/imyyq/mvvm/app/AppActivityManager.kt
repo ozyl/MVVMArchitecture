@@ -24,10 +24,7 @@ object AppActivityManager {
         return mActivityList.indexOf(activity)
     }
 
-    fun currentActivitySize(): Int {
-        checkEnabled()
-        return mActivityList.size
-    }
+    val activitySize get() = mActivityList.size
 
     fun get(clazz: Class<out Activity>): Activity? {
         checkEnabled()
