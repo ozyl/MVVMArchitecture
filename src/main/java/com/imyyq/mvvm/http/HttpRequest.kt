@@ -52,8 +52,8 @@ object HttpRequest {
     /**
      * 存储 baseUrl，以便可以动态更改
      */
-    private var spModifyBaseUrl by mmkv.string(MODIFY_BASE_URL_KEY)
-    private lateinit var modifyBaseUrl: String
+    var spModifyBaseUrl by mmkv.string(MODIFY_BASE_URL_KEY)
+    lateinit var modifyBaseUrl: String
 
     /**
      * 请求超时时间，秒为单位
