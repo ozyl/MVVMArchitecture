@@ -19,6 +19,16 @@ object AppActivityManager {
         return mActivityList.isEmpty()
     }
 
+    fun getPosition(activity: Activity): Int {
+        checkEnabled()
+        return mActivityList.indexOf(activity)
+    }
+
+    fun currentActivitySize(): Int {
+        checkEnabled()
+        return mActivityList.size
+    }
+
     fun get(clazz: Class<out Activity>): Activity? {
         checkEnabled()
         return mActivityList.find { it.javaClass == clazz }
