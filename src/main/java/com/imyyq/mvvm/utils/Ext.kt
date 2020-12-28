@@ -63,8 +63,8 @@ val String?.isJson: Boolean
     get() {
         this?:return false
         return try {
-            this.toBean<JsonElement>()
-            true
+            val jsonElement = this.toBean<JsonElement>()
+            jsonElement.isJsonObject || jsonElement.isJsonArray
         } catch (ex: JsonSyntaxException) {
             false
         }
