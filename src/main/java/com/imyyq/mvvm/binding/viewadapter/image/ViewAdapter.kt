@@ -33,7 +33,7 @@ fun setImageUri(
     imageView: ImageView,
     model: Any?,
     placeholder: Drawable?,
-    error: Drawable?,
+    errorPlaceholder: Drawable?,
     roundingRadius: Int?,
     topLeftRoundingRadius: Int?,
     topRightRoundingRadius: Int?,
@@ -58,7 +58,7 @@ fun setImageUri(
                 }
             }
             if (useError != false) {
-                error?.let {
+                errorPlaceholder?.let {
                     error(it)
                 } ?: kotlin.run {
                     val errorRes = GlobalConfig.ImageView.errorRes
