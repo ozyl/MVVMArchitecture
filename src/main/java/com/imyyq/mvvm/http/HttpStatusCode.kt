@@ -1,10 +1,9 @@
 package com.imyyq.mvvm.http
 
-const val notHttpException = -100
-const val netException = -101
-const val cancelException = -102
-const val entityNullable = -1
-const val entityCodeNullable = -2
+const val notHttpException = -12345678904
+const val netException = -12345678903
+const val entityNullable = -12345678901
+const val entityCodeNullable = -12345678902
 
 // 1xx消息
 const val perhapsContinue = 100
