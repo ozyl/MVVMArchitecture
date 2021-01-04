@@ -5,16 +5,16 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.collection.ArrayMap
 import com.apkfuns.logutils.LogUtils
-import com.imyyq.mvvm.BuildConfig
 import com.imyyq.mvvm.R
 import com.imyyq.mvvm.app.AppActivityManager
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.interceptor.HeaderInterceptor
+import com.imyyq.mvvm.utils.AppUtil
 import com.imyyq.mvvm.utils.Utils
 import com.safframework.http.interceptor.LoggingInterceptor
 import mmkv
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -103,17 +103,15 @@ object HttpRequest {
                 }
             }
 
-            // 日志拦截器，是否打印由 LogUtil 控制
             httpClientBuilder
                 .addInterceptor(
                     LoggingInterceptor.Builder()
-                        .loggable(BuildConfig.DEBUG)
+                        .loggable(AppUtil.isDebug())
                         .request()
                         .response()
                         .hideVerticalLine()
                         .requestTag("Request")
                         .responseTag("Response")
-                        //.hideVerticalLine()// 隐藏竖线边框
                         .build()
                 )
             val client = httpClientBuilder.build()
@@ -126,36 +124,37 @@ object HttpRequest {
                 if (!this::modifyBaseUrl.isInitialized) {
                     modifyBaseUrl = spModifyBaseUrl ?: ""
                 }
-                builder.callFactory {
-                    LogUtils.i("HttpRequest getService: old ${it.url()}")
-                    if (modifyBaseUrl.isNotBlank()) {
-                        val url = it.url().toString()
-                        // 防止尾缀有问题
-                        if (mDefaultBaseUrl.endsWith("/") && !modifyBaseUrl.endsWith("/")) {
-                            modifyBaseUrl += "/"
-                        } else if (!mDefaultBaseUrl.endsWith("/") && modifyBaseUrl.endsWith("/")) {
-                            modifyBaseUrl = modifyBaseUrl.substring(0, modifyBaseUrl.length - 1)
-                        }
-                        if (!url.startsWith(modifyBaseUrl)){
-                            // 替换 url 并创建新的 call
-                            val newRequest: Request =
-                                it.newBuilder()
-                                    .url(
-                                        HttpUrl.get(
+                builder.callFactory(object : okhttp3.Call.Factory {
+                    override fun newCall(request: Request): okhttp3.Call {
+                        return if (modifyBaseUrl.isNotBlank()) {
+                            val url = request.url.toString()
+                            // 防止尾缀有问题
+                            if (mDefaultBaseUrl.endsWith("/") && !modifyBaseUrl.endsWith("/")) {
+                                modifyBaseUrl += "/"
+                            } else if (!mDefaultBaseUrl.endsWith("/") && modifyBaseUrl.endsWith("/")) {
+                                modifyBaseUrl = modifyBaseUrl.substring(0, modifyBaseUrl.length - 1)
+                            }
+                            if (!url.startsWith(modifyBaseUrl)) {
+                                // 替换 url 并创建新的 call
+                                val newRequest: Request =
+                                    request.newBuilder()
+                                        .url(
                                             url.replace(
                                                 mDefaultBaseUrl,
                                                 modifyBaseUrl
                                             )
+                                                .toHttpUrl()
                                         )
-                                    )
-                                    .build()
-                            LogUtils.i("HttpRequest getService: new ${newRequest.url()}")
-                            client.newCall(newRequest)
-                        }else client.newCall(it)
-                    } else {
-                        client.newCall(it)
+                                        .build()
+                                LogUtils.i("HttpRequest getService: old ${request.url} new ${newRequest.url}")
+                                client.newCall(newRequest)
+                            } else client.newCall(request)
+                        } else {
+                            client.newCall(request)
+                        }
                     }
-                }
+
+                })
             }
             // Kotlin 使用协程，Java 使用 rx
             val adapter = getRxJavaAdapter()

@@ -85,6 +85,7 @@ dependencies {
     api Deps.lifecycleJava8
 
     api Deps.logginginterceptor
+    api Deps.okHttp
 
     debugApi Deps.logUtil
     releaseApi Deps.logUtilNoOp
