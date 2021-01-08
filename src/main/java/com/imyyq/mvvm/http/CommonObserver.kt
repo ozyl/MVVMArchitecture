@@ -61,7 +61,7 @@ abstract class CommonObserver<R> : Observer<IBaseResponse<R>> {
         } else {
             val log = Log.getStackTraceString(e)
             onFailed(
-                notHttpException,
+                netException,
                 "$msgNotHttpException, 具体错误是\n${if (log.isEmpty()) e.message else log}"
             )
         }

@@ -80,8 +80,8 @@ object HttpHandler {
             }
             else -> {
                 onFailed?.invoke(
-                    notHttpException,
-                    msgException,
+                    netException,
+                    msgNotHttpException,
                     null
                 )
             }

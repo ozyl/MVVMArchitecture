@@ -1,6 +1,5 @@
 package com.imyyq.mvvm.http
 
-const val notHttpException = -1234
 const val netException = -1233
 const val entityNullable = -1232
 const val entityCodeNullable = -1231
@@ -82,3 +81,7 @@ const val enhanceYourCalm = 420
 const val noResponse = 444
 const val blockedbyWindowsParentalControls = 450
 const val requestHeaderTooLarge = 494
+
+
+
+fun isNetError(code: Int?) = code== netException
