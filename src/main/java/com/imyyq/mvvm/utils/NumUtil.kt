@@ -29,4 +29,7 @@ object NumUtil {
         return BigDecimal(this.toString()).divide(BigDecimal(double.toString()),2,roundingMode)
     }
 
+    fun Number.roundDecimalPlaces(scale:Int=2, roundingMode:Int=BigDecimal.ROUND_HALF_UP) =
+        BigDecimal(this.toString()).setScale(scale,roundingMode).toDouble()
+
 }
