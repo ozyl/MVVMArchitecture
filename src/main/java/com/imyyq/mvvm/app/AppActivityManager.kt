@@ -31,6 +31,11 @@ object AppActivityManager {
         return mActivityList.find { it.javaClass == clazz }
     }
 
+    fun get(index: Int): Activity? {
+        checkEnabled()
+        return mActivityList.getOrNull(index)
+    }
+
     fun current(): Activity? {
         checkEnabled()
         if (mActivityList.isNotEmpty()) {
