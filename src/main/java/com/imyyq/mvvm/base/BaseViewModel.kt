@@ -13,7 +13,6 @@ import androidx.lifecycle.viewModelScope
 import com.imyyq.mvvm.app.CheckUtil
 import com.imyyq.mvvm.app.RepositoryManager
 import com.imyyq.mvvm.bus.LiveDataBus
-import com.imyyq.mvvm.http.HttpHandler
 import com.imyyq.mvvm.utils.SingleLiveEvent
 import com.imyyq.mvvm.utils.Utils
 import com.imyyq.mvvm.utils.isInUIThread
@@ -239,6 +238,11 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         finish(resultCode, Utils.getIntentByMapOrBundle(map = map, bundle = bundle))
     }
 
+    fun overridePendingTransition(enterAnim:Int, exitAnim:Int){
+        CheckUtil.checkStartAndFinishEvent(mUiChangeLiveData.overridePendingTransitionEvent)
+        LiveDataBus.send(mUiChangeLiveData.overridePendingTransitionEvent!!, Pair(enterAnim, exitAnim))
+    }
+
     fun finish(resultCode: Int? = null, data: Intent? = null) {
         CheckUtil.checkStartAndFinishEvent(mUiChangeLiveData.finishEvent)
         LiveDataBus.send(mUiChangeLiveData.finishEvent!!, Pair(resultCode, data))
@@ -293,6 +297,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         var repositoryReadyCompleteEvent: SingleLiveEvent<Boolean?>? = null
 
         var finishEvent: String? = null
+        var overridePendingTransitionEvent: String? = null
         var setResultEvent: String? = null
 
         var loadSirEvent: SingleLiveEvent<Class<out Callback>?>? = null
@@ -320,6 +325,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
             startActivityWithMapEvent = UUID.randomUUID().toString()
             startActivityEventWithBundle = UUID.randomUUID().toString()
             finishEvent = UUID.randomUUID().toString()
+            overridePendingTransitionEvent = UUID.randomUUID().toString()
             setResultEvent = UUID.randomUUID().toString()
         }
     }

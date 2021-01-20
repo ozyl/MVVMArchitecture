@@ -49,7 +49,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (superOnCreateAfterIsContinue())return
+        if (superOnCreateAfterIsContinue()) return
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
@@ -69,7 +69,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         mViewModel = initViewModel(this)
         mViewModel.mIntent = getArgumentsIntent()
 
-        if (readyCompleteListener!=null){
+        if (readyCompleteListener != null) {
             mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
             mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
                 if (it == true) readyCompleteListener?.invoke()
@@ -109,6 +109,15 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 Observer {
                     setResult(it)
                     finish()
+                },
+                true
+            )
+            // vm 设置切换动画
+            LiveDataBus.observe<Pair<Int?, Int?>>(
+                this,
+                mViewModel.mUiChangeLiveData.overridePendingTransitionEvent!!,
+                Observer {
+                    overridePendingTransition(it.first?:0, it.second?:0)
                 },
                 true
             )
@@ -203,7 +212,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         }
     }
 
-    open val readyCompleteListener:(()->Unit)?=null
+    open val readyCompleteListener: (() -> Unit)? = null
 
     open fun extUiEvent(it: UIEvent) {
 
@@ -248,8 +257,6 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     }
 
     open fun getLoadSir() = LoadSir.getDefault()
-
-
 
 
     fun showStatusCallback(it: Class<out Callback>?) {
