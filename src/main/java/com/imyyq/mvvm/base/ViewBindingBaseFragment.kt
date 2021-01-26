@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import com.apkfuns.logutils.LogUtils
 import com.fenxiangbuy.dialog.MsgDialog
 import com.fenxiangbuy.dialog.WaitDialog
 import com.imyyq.mvvm.bus.LiveDataBus
@@ -232,12 +233,10 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     override fun initLoadSir() {
         // 只有目标不为空的情况才有实例化的必要
         if (getLoadSirTarget() != null) {
-            if (!this::mLoadService.isInitialized) {
-                mLoadService = LoadSir.getDefault().register(
-                    getLoadSirTarget()
-                ) { onLoadSirReload() }
-                mLoadService.showSuccess()
-            }
+            mLoadService = LoadSir.getDefault().register(
+                getLoadSirTarget()
+            ) { onLoadSirReload() }
+            mLoadService.showSuccess()
             mViewModel.mUiChangeLiveData.initLoadSirEvent()
             mViewModel.mUiChangeLiveData.loadSirEvent?.observe(this, Observer {
                 if (it == null) {
@@ -272,14 +271,22 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
 
     fun showStatusCallback(it: Class<out Callback>?) {
-        if (this::mLoadService.isInitialized)
-            mLoadService.showCallback(it)
+        try {
+            if (this::mLoadService.isInitialized)
+                mLoadService.showCallback(it)
+        } catch (e: Exception) {
+            LogUtils.e(e)
+        }
     }
 
 
     fun showStatusSuccess() {
-        if (this::mLoadService.isInitialized)
-            mLoadService.showSuccess()
+        try {
+            if (this::mLoadService.isInitialized)
+                mLoadService.showSuccess()
+        } catch (e: Exception) {
+            LogUtils.e(e)
+        }
     }
 
     private fun initStartActivityForResult() {
