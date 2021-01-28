@@ -34,6 +34,18 @@ fun onClickCommand(
 }
 
 @BindingAdapter(
+    value = ["onLongClickCommand"],
+    requireAll = false
+)
+fun onLongClickCommand(
+    view: View,
+    clickCommand: View.OnLongClickListener?,
+) {
+    clickCommand ?: return
+    view.setOnLongClickListener(clickCommand)
+}
+
+@BindingAdapter(
     value = ["multiClickToChangeBaseUrl"]
 )
 fun multiClickToChangeBaseUrl(
