@@ -13,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.imyyq.mvvm.app.GlobalConfig
 import com.imyyq.mvvm.glide.RoundedCornersExt
 import com.imyyq.mvvm.utils.DensityUtil
+import com.imyyq.mvvm.utils.isValidGlideContext
 
 @SuppressLint("CheckResult")
 @BindingAdapter(
@@ -44,7 +45,7 @@ fun setImageUri(
     usePlaceholder: Boolean?,
     useError: Boolean?
 ) {
-    if (model != null) {
+    if (model != null && imageView.context.isValidGlideContext) {
         //使用Glide框架加载图片
         val request = Glide.with(imageView.context)
             .load(model)

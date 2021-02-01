@@ -1,5 +1,7 @@
 package com.imyyq.mvvm.utils
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -157,3 +159,6 @@ inline fun <reified T : BaseViewModel<*>> AppCompatActivity.getViewModel(): T {
     }
 
 }
+
+
+val Context.isValidGlideContext get() = this !is Activity || (!this.isDestroyed && !this.isFinishing)
