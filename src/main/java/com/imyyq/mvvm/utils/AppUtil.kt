@@ -9,10 +9,9 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.net.Uri
-import android.provider.Settings
 import android.view.View
 import com.apkfuns.logutils.LogUtils
+import com.hjq.permissions.XXPermissions
 import com.imyyq.mvvm.app.BaseApp
 
 
@@ -137,14 +136,9 @@ object AppUtil {
      */
     fun gotoAppDetailsSettings(
         context: Context,
-        requestCode: Int,
-        packageName: String = context.packageName
+        permissions:List<String>?
     ) {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.fromParts("package", packageName, null)
-        if (context is Activity) {
-            context.startActivityForResult(intent, requestCode)
-        }
+        XXPermissions.startPermissionActivity(context, permissions);
     }
 
     /**

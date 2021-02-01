@@ -153,11 +153,11 @@ dependencies {
     }
 
     // 权限申请
-    checkMVVMConfigProperty(IncludeLib.livePermissions, "livePermissions")
-    if (IncludeLib.livePermissions) {
-        api Deps.livePermissions
+    checkMVVMConfigProperty(IncludeLib.xxPermissions, "xxPermissions")
+    if (IncludeLib.xxPermissions) {
+        api Deps.xxPermissions
     } else {
-        compileOnly Deps.livePermissions
+        compileOnly Deps.xxPermissions
     }
 
     // rx 系列，Kotlin 最好使用 flow，不要使用 rx

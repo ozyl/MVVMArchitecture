@@ -72,8 +72,8 @@ ext {
             bindingAdapterRv         : "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:${Versions.bindingAdapter}",
             bindingAdapterVp2        : "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-viewpager2:${Versions.bindingAdapter}",
 
-            // 权限申请
-            livePermissions          : "com.ftd.livepermissions:livepermissions:1.0.2",
+            xxPermissions            : 'com.hjq:xxpermissions:9.8',
+
 
             // 内部加载中
             loadSir                  : "com.kingja.loadsir:loadsir:1.3.8",
@@ -85,6 +85,7 @@ ext {
             lifecycleRuntimeKTX      : "androidx.lifecycle:lifecycle-runtime-ktx:$Versions.lifecycle",
             // 创建可监测的 LiveData 流
             reactiveStreamsKTX       : "androidx.lifecycle:lifecycle-reactivestreams-ktx:$Versions.lifecycle",
+
 
             // viewModelScope，会在 view 消失时取消协程
             viewModelKTX             : "androidx.lifecycle:lifecycle-viewmodel-ktx:$Versions.lifecycle",
