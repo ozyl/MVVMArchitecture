@@ -86,6 +86,10 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     val bindingIsInit: Boolean
         get() = this::mBinding.isInitialized
 
+
+    val modelIsInit :Boolean
+        get() = this::mViewModel.isInitialized
+
     @CallSuper
     override fun initUiChangeLiveData() {
         if (isViewModelNeedStartAndFinish()) {
