@@ -71,13 +71,13 @@ object AppUtil {
      * 取得版本名称
      */
     val versionName: String
-        get() = defPackageInfo!!.versionName
+        get() = defPackageInfo?.versionName?:""
 
     /**
      * 取得版本号
      */
     val versionCode: Int
-        get() = defPackageInfo!!.versionCode
+        get() = defPackageInfo?.versionCode?:-1
 
     /**
      * 获取应用的信息，0代表是获取版本信息
