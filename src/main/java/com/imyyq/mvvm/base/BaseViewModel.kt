@@ -191,6 +191,13 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
             event?.postValue(data)
         }
     }
+    fun <T> refreshEvent(event: MutableLiveData<T>?) {
+        if (isInUIThread()) {
+            event?.value = event?.value
+        } else {
+            event?.postValue(event.value)
+        }
+    }
 
 
     // 以下是内嵌加载中布局相关的 =========================================================
