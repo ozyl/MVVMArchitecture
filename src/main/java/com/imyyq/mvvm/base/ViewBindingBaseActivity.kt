@@ -17,10 +17,12 @@ import com.fenxiangbuy.dialog.MsgDialog
 import com.fenxiangbuy.dialog.WaitDialog
 import com.github.anzewei.parallaxbacklayout.ParallaxBack
 import com.imyyq.mvvm.bus.LiveDataBus
+import com.imyyq.mvvm.utils.DialogUtil
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.callback.Callback
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
+import com.kingja.loadsir.core.Transport
 
 
 /**
@@ -87,7 +89,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         get() = this::mBinding.isInitialized
 
 
-    val modelIsInit :Boolean
+    val modelIsInit: Boolean
         get() = this::mViewModel.isInitialized
 
     @CallSuper
@@ -121,7 +123,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 this,
                 mViewModel.mUiChangeLiveData.overridePendingTransitionEvent!!,
                 Observer {
-                    overridePendingTransition(it.first?:0, it.second?:0)
+                    overridePendingTransition(it.first ?: 0, it.second ?: 0)
                 },
                 true
             )
@@ -223,20 +225,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     }
 
     open fun initMsgDialog(msgDialog: MsgDialog, it: UIEvent) {
-        msgDialog.content = it.msg ?: ""
-        msgDialog.title = it.title ?: "温馨提示"
-        msgDialog.isCancelable = it.isCancelable
-
-        msgDialog.confirm.apply {
-            isAutoClose = it.autoConfirm
-            click = it.confirmVoidCallback
-            text = it.confirmText
-        }
-        msgDialog.cancel.apply {
-            isAutoClose = it.autoCancel
-            click = it.cancelVoidCallback
-            text = it.cancelText
-        }
+        DialogUtil.initMsgDialog(msgDialog,it)
     }
 
     @CallSuper
@@ -265,6 +254,11 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
 
     fun showStatusCallback(it: Class<out Callback>?) {
         mLoadService.showCallback(it)
+    }
+
+
+    fun setCallBack(callback: Class<out Callback?>?, transport: Transport?) {
+        mLoadService.setCallBack(callback, transport)
     }
 
 

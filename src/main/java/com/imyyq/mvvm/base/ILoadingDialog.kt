@@ -1,5 +1,6 @@
 package com.imyyq.mvvm.base
 
+import android.view.Gravity
 import com.imyyq.mvvm.app.GlobalConfig
 
 /**
@@ -26,7 +27,8 @@ data class UIEvent(
     var time:Int?=null,
     var extModel: Any?=null,
     val isCancelable:Boolean=true,
-    val tag:String?=null
+    val tag:String?=null,
+    val gravity:Int=Gravity.CENTER
 )
 
 

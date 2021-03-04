@@ -19,10 +19,12 @@ import com.apkfuns.logutils.LogUtils
 import com.fenxiangbuy.dialog.MsgDialog
 import com.fenxiangbuy.dialog.WaitDialog
 import com.imyyq.mvvm.bus.LiveDataBus
+import com.imyyq.mvvm.utils.DialogUtil
 import com.imyyq.mvvm.utils.Utils
 import com.kingja.loadsir.callback.Callback
 import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
+import com.kingja.loadsir.core.Transport
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -212,21 +214,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
 
     open fun initMsgDialog(msgDialog: MsgDialog, it: UIEvent) {
-        msgDialog.content = it.msg ?: ""
-        msgDialog.title = it.title ?: "温馨提示"
-
-
-        msgDialog.confirm.apply {
-            isAutoClose = it.autoConfirm
-            click = it.confirmVoidCallback
-            text = it.confirmText
-        }
-
-        msgDialog.cancel.apply {
-            isAutoClose = it.autoCancel
-            click = it.cancelVoidCallback
-            text = it.cancelText
-        }
+        DialogUtil.initMsgDialog(msgDialog,it)
     }
 
     @CallSuper
@@ -287,6 +275,11 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         } catch (e: Exception) {
             LogUtils.e(e)
         }
+    }
+
+
+    fun setCallBack(callback: Class<out Callback?>?, transport: Transport?) {
+        mLoadService.setCallBack(callback, transport)
     }
 
     private fun initStartActivityForResult() {
