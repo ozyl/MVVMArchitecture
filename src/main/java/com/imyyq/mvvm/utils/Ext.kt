@@ -58,7 +58,7 @@ fun obtainString(@StringRes resId: Int, vararg formatArgs: Any): String {
     return BaseApp.getInstance().getString(resId, *formatArgs)
 }
 
-inline fun <reified T> String.toBean(gson:Gson=commonGson): T =
+inline fun <reified T> String.toBean(gson:Gson=commonGson): T? =
     gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
 
 val String?.isJson: Boolean
@@ -66,14 +66,16 @@ val String?.isJson: Boolean
         this?:return false
         return try {
             val jsonElement = this.toBean<JsonElement>()
-            jsonElement.isJsonObject || jsonElement.isJsonArray
+            jsonElement?.run {
+                jsonElement.isJsonObject || jsonElement.isJsonArray
+            }?:false
         } catch (ex: JsonSyntaxException) {
             false
         }
     }
 
 inline fun <reified K, reified V> Any.toMap(): Map<K, V> {
-    return commonGson.toJson(this).toBean()
+    return commonGson.toJson(this).toBean()?: mutableMapOf<K,V>()
 }
 
 val commonGson: Gson = GsonBuilder().apply {
