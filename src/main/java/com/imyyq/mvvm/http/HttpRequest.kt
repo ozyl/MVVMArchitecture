@@ -2,9 +2,16 @@ package com.imyyq.mvvm.http
 
 import android.view.View
 import android.widget.*
+import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.collection.ArrayMap
 import com.apkfuns.logutils.LogUtils
+import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
+import com.google.gson.stream.JsonWriter
 import com.imyyq.mvvm.R
 import com.imyyq.mvvm.app.AppActivityManager
 import com.imyyq.mvvm.app.GlobalConfig
@@ -82,6 +89,13 @@ object HttpRequest {
         return null
     }
 
+    val gsonConverter by lazy {
+        GsonConverterFactory.create(GsonBuilder().
+            registerTypeAdapter(object :TypeToken<Double>(){}.type,DoubleEmptyStringTypeAdapter())
+            .registerTypeAdapter(object :TypeToken<Long>(){}.type,LongEmptyStringTypeAdapter())
+            .registerTypeAdapter(object :TypeToken<Int>(){}.type,IntEmptyStringTypeAdapter()).create())
+    }
+
     /**
      * 如果有不同的 baseURL，那么可以相同 baseURL 的接口都放在一个 Service 钟，通过此方法来获取
      */
@@ -119,7 +133,7 @@ object HttpRequest {
                 // 基础url
                 .baseUrl(host)
                 // JSON解析
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(gsonConverter)
             if (GlobalConfig.gIsNeedChangeBaseUrl) {
                 if (!this::modifyBaseUrl.isInitialized) {
                     modifyBaseUrl = spModifyBaseUrl ?: ""
@@ -304,6 +318,81 @@ object HttpRequest {
             }
 
             editDialog.create().show()
+        }
+    }
+}
+
+
+
+class LongEmptyStringTypeAdapter : TypeAdapter<Long?>() {
+    @Throws(IOException::class)
+    override fun write(jsonWriter: JsonWriter, @Nullable s: Long?) {
+        if (s == null) {
+            jsonWriter.nullValue()
+        } else {
+            jsonWriter.value(s)
+        }
+    }
+
+    @Throws(IOException::class)
+    override fun read(jsonReader: JsonReader): Long? {
+        val token = jsonReader.peek()
+        return when (token) {
+            JsonToken.NULL ->  {
+                jsonReader.nextNull()
+                null
+            }
+            JsonToken.STRING -> jsonReader.nextString().toLongOrNull()
+            JsonToken.NUMBER -> jsonReader.nextLong()
+            else -> throw IllegalStateException("Unexpected token: $token")
+        }
+    }
+}
+class DoubleEmptyStringTypeAdapter : TypeAdapter<Double?>() {
+    @Throws(IOException::class)
+    override fun write(jsonWriter: JsonWriter, @Nullable s: Double?) {
+        if (s == null) {
+            jsonWriter.nullValue()
+        } else {
+            jsonWriter.value(s)
+        }
+    }
+
+    @Throws(IOException::class)
+    override fun read(jsonReader: JsonReader): Double? {
+        val token = jsonReader.peek()
+        return when (token) {
+            JsonToken.NULL ->  {
+                jsonReader.nextNull()
+                null
+            }
+            JsonToken.STRING -> jsonReader.nextString().toDoubleOrNull()
+            JsonToken.NUMBER -> jsonReader.nextDouble()
+            else -> throw IllegalStateException("Unexpected token: $token")
+        }
+    }
+}
+class IntEmptyStringTypeAdapter : TypeAdapter<Int?>() {
+    @Throws(IOException::class)
+    override fun write(jsonWriter: JsonWriter, @Nullable s: Int?) {
+        if (s == null) {
+            jsonWriter.nullValue()
+        } else {
+            jsonWriter.value(s)
+        }
+    }
+
+    @Throws(IOException::class)
+    override fun read(jsonReader: JsonReader): Int? {
+        val token = jsonReader.peek()
+        return when (token) {
+            JsonToken.NULL -> {
+                jsonReader.nextNull()
+                null
+            }
+            JsonToken.STRING -> jsonReader.nextString().toIntOrNull()
+            JsonToken.NUMBER -> jsonReader.nextInt()
+            else -> throw IllegalStateException("Unexpected token: $token")
         }
     }
 }
