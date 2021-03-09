@@ -21,6 +21,7 @@ data class UIEvent(
     var cancelVoidCallback:(()->Unit)?=null,
     var confirmVoidCallback:(()->Unit)?=null,
     var autoConfirm:Boolean=true,
+    var nullOrEmptyGone:Boolean=true,
     var autoCancel:Boolean=true,
     var confirmText:String?=null,
     var cancelText:String?=null,

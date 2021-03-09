@@ -202,6 +202,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
                         waitDialog.hintMsg = it.msg
+                        waitDialog.nullOrEmptyGone = it.nullOrEmptyGone
                         waitDialog.isCancelable = it.isCancelable
                         waitDialog.show(this)
                     }
