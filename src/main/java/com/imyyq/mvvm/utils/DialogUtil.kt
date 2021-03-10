@@ -9,6 +9,7 @@ object DialogUtil {
         msgDialog.content = it.msg ?: ""
         msgDialog.title = it.title ?: "温馨提示"
         msgDialog.msgGravity = it.gravity
+        msgDialog.isCancelable = it.isCancelable
 
         msgDialog.confirm.apply {
             isAutoClose = it.autoConfirm
