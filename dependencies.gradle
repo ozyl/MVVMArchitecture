@@ -116,7 +116,7 @@ ext {
 
             parallaxBackLayout       : "com.github.anzewei:parallaxbacklayout:1.1.9",
             toast                    : "com.hjq:toast:8.6",
-            basePopup                : "com.github.razerdp:BasePopup:2.2.8",
+            basePopup                : "com.github.razerdp:BasePopup:2.2.20",
             okHttp                   : "com.squareup.okhttp3:okhttp:${Versions.okHttp}",
     ]
 
