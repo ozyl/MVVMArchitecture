@@ -165,3 +165,6 @@
 -keep class com.youth.banner.** {
     *;
  }
+
+
+-keep class com.hjq.permissions.** {*;}
