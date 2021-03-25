@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 import java.util.*
 
 open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app), IViewModel,
@@ -95,12 +94,18 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
     override fun onCreate(owner: LifecycleOwner) {
         if (isAutoCreateRepo) {
             if (!this::mModel.isInitialized) {
-                val modelClass: Class<M>?
-                val type: Type? = javaClass.genericSuperclass
-                modelClass = if (type is ParameterizedType) {
-                    @Suppress("UNCHECKED_CAST")
-                    type.actualTypeArguments[0] as? Class<M>
-                } else null
+                var modelClass: Class<M>?=null
+                var currentClass :Class<*> = javaClass
+                while (currentClass.superclass!=null){
+                    if(currentClass==BaseViewModel::class.java)break
+                    val type = currentClass.genericSuperclass
+                    if (type is ParameterizedType){
+                        @Suppress("UNCHECKED_CAST")
+                        modelClass = type.actualTypeArguments[0] as? Class<M>
+                        if (modelClass!=null) break
+                    }
+                    currentClass = currentClass.superclass
+                }
                 if (modelClass != null && modelClass != BaseModel::class.java) {
                     mModel = RepositoryManager.getRepo(modelClass, isCacheRepo())
                 }
