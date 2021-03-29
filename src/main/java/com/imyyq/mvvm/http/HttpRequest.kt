@@ -60,7 +60,7 @@ object HttpRequest {
      * 存储 baseUrl，以便可以动态更改
      */
     var spModifyBaseUrl by mmkv.string(MODIFY_BASE_URL_KEY)
-    lateinit var modifyBaseUrl: String
+    var modifyBaseUrl: String? = null
 
     /**
      * 请求超时时间，秒为单位
@@ -90,10 +90,18 @@ object HttpRequest {
     }
 
     val gsonConverter by lazy {
-        GsonConverterFactory.create(GsonBuilder().
-            registerTypeAdapter(object :TypeToken<Double>(){}.type,DoubleEmptyStringTypeAdapter())
-            .registerTypeAdapter(object :TypeToken<Long>(){}.type,LongEmptyStringTypeAdapter())
-            .registerTypeAdapter(object :TypeToken<Int>(){}.type,IntEmptyStringTypeAdapter()).create())
+        GsonConverterFactory.create(
+            GsonBuilder().registerTypeAdapter(
+                object : TypeToken<Double>() {}.type,
+                DoubleEmptyStringTypeAdapter()
+            )
+                .registerTypeAdapter(
+                    object : TypeToken<Long>() {}.type,
+                    LongEmptyStringTypeAdapter()
+                )
+                .registerTypeAdapter(object : TypeToken<Int>() {}.type, IntEmptyStringTypeAdapter())
+                .create()
+        )
     }
 
     /**
@@ -135,39 +143,38 @@ object HttpRequest {
                 // JSON解析
                 .addConverterFactory(gsonConverter)
             if (GlobalConfig.gIsNeedChangeBaseUrl) {
-                if (!this::modifyBaseUrl.isInitialized) {
+                if (modifyBaseUrl == null) {
                     modifyBaseUrl = spModifyBaseUrl ?: ""
                 }
                 builder.callFactory(object : okhttp3.Call.Factory {
                     override fun newCall(request: Request): okhttp3.Call {
-                        return if (modifyBaseUrl.isNotBlank()) {
-                            val url = request.url.toString()
-                            // 防止尾缀有问题
-                            if (mDefaultBaseUrl.endsWith("/") && !modifyBaseUrl.endsWith("/")) {
-                                modifyBaseUrl += "/"
-                            } else if (!mDefaultBaseUrl.endsWith("/") && modifyBaseUrl.endsWith("/")) {
-                                modifyBaseUrl = modifyBaseUrl.substring(0, modifyBaseUrl.length - 1)
-                            }
-                            if (!url.startsWith(modifyBaseUrl)) {
-                                // 替换 url 并创建新的 call
-                                val newRequest: Request =
-                                    request.newBuilder()
-                                        .url(
-                                            url.replace(
-                                                mDefaultBaseUrl,
-                                                modifyBaseUrl
-                                            )
-                                                .toHttpUrl()
-                                        )
-                                        .build()
-                                LogUtils.i("HttpRequest getService: old ${request.url} new ${newRequest.url}")
-                                client.newCall(newRequest)
-                            } else client.newCall(request)
-                        } else {
-                            client.newCall(request)
+                        val newUrl = modifyBaseUrl ?: return client.newCall(request)
+                        if (newUrl.isBlank()) {
+                            return client.newCall(request)
                         }
+                        val url = request.url.toString()
+                        // 防止尾缀有问题
+                        if (mDefaultBaseUrl.endsWith("/") && !newUrl.endsWith("/")) {
+                            modifyBaseUrl += "/"
+                        } else if (!mDefaultBaseUrl.endsWith("/") && newUrl.endsWith("/")) {
+                            modifyBaseUrl = newUrl.substring(0, newUrl.length - 1)
+                        }
+                        return if (!url.startsWith(newUrl)) {
+                            // 替换 url 并创建新的 call
+                            val newRequest: Request =
+                                request.newBuilder()
+                                    .url(
+                                        url.replace(
+                                            mDefaultBaseUrl,
+                                            newUrl
+                                        )
+                                            .toHttpUrl()
+                                    )
+                                    .build()
+                            LogUtils.i("HttpRequest getService: old ${request.url} new ${newRequest.url}")
+                            client.newCall(newRequest)
+                        } else client.newCall(request)
                     }
-
                 })
             }
             // Kotlin 使用协程，Java 使用 rx
@@ -284,7 +291,7 @@ object HttpRequest {
                 text = mDefaultBaseUrl
             }
             val editView = EditText(activity).apply {
-                setText(if (modifyBaseUrl.isBlank()) mDefaultBaseUrl else modifyBaseUrl)
+                setText(if (modifyBaseUrl.isNullOrBlank()) mDefaultBaseUrl else modifyBaseUrl)
             }
 
             layout.addView(textView)
@@ -323,7 +330,6 @@ object HttpRequest {
 }
 
 
-
 class LongEmptyStringTypeAdapter : TypeAdapter<Long?>() {
     @Throws(IOException::class)
     override fun write(jsonWriter: JsonWriter, @Nullable s: Long?) {
@@ -338,7 +344,7 @@ class LongEmptyStringTypeAdapter : TypeAdapter<Long?>() {
     override fun read(jsonReader: JsonReader): Long? {
         val token = jsonReader.peek()
         return when (token) {
-            JsonToken.NULL ->  {
+            JsonToken.NULL -> {
                 jsonReader.nextNull()
                 null
             }
@@ -348,6 +354,7 @@ class LongEmptyStringTypeAdapter : TypeAdapter<Long?>() {
         }
     }
 }
+
 class DoubleEmptyStringTypeAdapter : TypeAdapter<Double?>() {
     @Throws(IOException::class)
     override fun write(jsonWriter: JsonWriter, @Nullable s: Double?) {
@@ -362,7 +369,7 @@ class DoubleEmptyStringTypeAdapter : TypeAdapter<Double?>() {
     override fun read(jsonReader: JsonReader): Double? {
         val token = jsonReader.peek()
         return when (token) {
-            JsonToken.NULL ->  {
+            JsonToken.NULL -> {
                 jsonReader.nextNull()
                 null
             }
@@ -372,6 +379,7 @@ class DoubleEmptyStringTypeAdapter : TypeAdapter<Double?>() {
         }
     }
 }
+
 class IntEmptyStringTypeAdapter : TypeAdapter<Int?>() {
     @Throws(IOException::class)
     override fun write(jsonWriter: JsonWriter, @Nullable s: Int?) {
