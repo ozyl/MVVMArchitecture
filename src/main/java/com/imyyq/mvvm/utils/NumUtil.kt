@@ -11,7 +11,7 @@ object NumUtil {
     fun Number.toFormatStr(
         roundType: Int=BigDecimal.ROUND_DOWN,
         scale:Int=0,
-        divide:Int=100000,
+        divide:Int=10000,
         unit:String="万"
     ): String {
         val originValue = BigDecimal(this.toDouble())
