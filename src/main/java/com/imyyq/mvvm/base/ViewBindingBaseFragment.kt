@@ -223,7 +223,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     override fun initLoadSir() {
         // 只有目标不为空的情况才有实例化的必要
         if (getLoadSirTarget() != null) {
-            mLoadService = LoadSir.getDefault().register(
+            mLoadService = getLoadSir().register(
                 getLoadSirTarget()
             ) { onLoadSirReload() }
             mLoadService.showSuccess()
