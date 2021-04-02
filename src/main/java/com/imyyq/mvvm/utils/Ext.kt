@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.apkfuns.logutils.LogUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -59,7 +60,13 @@ fun obtainString(@StringRes resId: Int, vararg formatArgs: Any): String {
 }
 
 inline fun <reified T> String.toBean(gson:Gson=commonGson): T? =
-    gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+    try {
+        gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        LogUtils.e("Json转换实体失败，转换内容：$this，错误信息：$e")
+        null
+    }
 
 val String?.isJson: Boolean
     get() {
