@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArrayMap
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
@@ -30,7 +29,7 @@ import kotlinx.coroutines.launch
 
 abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out BaseModel>>(
     private val sharedViewModel: Boolean = false
-) : Fragment(),
+) : BaseVisibilityFragment(),
     IView<V, VM>, ILoadingDialog, ILoading, IActivityResult {
 
     protected lateinit var mBinding: V
