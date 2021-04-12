@@ -30,8 +30,9 @@ object HttpHandler {
         entity: IBaseResponse<T?>?,
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?,
-        onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null
-    ) {
+        onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
+        onResultOrNull: ((t: T?) -> Unit)?=null,
+        ) {
         // 防止实体为 null
         if (entity == null) {
             onFailed?.invoke(entityNullable, msgEntityNullable, null)
@@ -49,6 +50,7 @@ object HttpHandler {
             entity.isSuccess() -> {
                 // 回调成功
                 onSuccess?.invoke()
+                onResultOrNull?.invoke(entity.data())
                 // 实体不为 null 才有价值
                 entity.data()?.let { onResult?.invoke(it) }
             }

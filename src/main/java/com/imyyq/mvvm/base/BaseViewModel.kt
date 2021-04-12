@@ -70,9 +70,10 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?=null,
         onFailed: ((code: Int, msg: String?,data:T?) -> Unit)? = null,
-        onComplete: (() -> Unit)? = null
-    ): Job {
-        return com.imyyq.mvvm.utils.launch(viewModelScope,block,onSuccess,onResult,onFailed,onComplete)
+        onComplete: (() -> Unit)? = null,
+        onResultOrNull: ((t: T?) -> Unit)?=null,
+        ): Job {
+        return com.imyyq.mvvm.utils.launch(viewModelScope,block,onSuccess,onResult,onFailed,onComplete,onResultOrNull = onResultOrNull)
     }
 
     /**
