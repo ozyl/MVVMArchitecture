@@ -125,10 +125,11 @@ fun <T> launch(
     onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
     onComplete: (() -> Unit)? = null,
     onCancel: (() -> Unit)? = null,
-): Job {
+    onResultOrNull: ((t: T?) -> Unit)?=null,
+    ): Job {
     return viewModelScope.launch {
         try {
-            HttpHandler.handleResult(block(), onSuccess, onResult, onFailed)
+            HttpHandler.handleResult(block(), onSuccess, onResult, onFailed,onResultOrNull)
         } catch (e: Exception) {
             if (GlobalConfig.gIsDebug) {
                 e.printStackTrace()
