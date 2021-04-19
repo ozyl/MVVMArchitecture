@@ -100,20 +100,24 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     @CallSuper
     override fun initUiChangeLiveData() {
+        initUiChangeLiveData(mViewModel)
+    }
+
+    fun initUiChangeLiveData(viewModel: BaseViewModel<out BaseModel>) {
         if (isViewModelNeedStartAndFinish()) {
-            mViewModel.mUiChangeLiveData.initStartAndFinishEvent()
+            viewModel.mUiChangeLiveData.initStartAndFinishEvent()
 
             // vm 可以结束界面
             LiveDataBus.observe(
                 this,
-                mViewModel.mUiChangeLiveData.finishEvent!!,
+                viewModel.mUiChangeLiveData.finishEvent!!,
                 Observer { activity?.finish() },
                 true
             )
             // vm 可以启动界面
             LiveDataBus.observe<Class<out Activity>>(
                 this,
-                mViewModel.mUiChangeLiveData.startActivityEvent!!,
+                viewModel.mUiChangeLiveData.startActivityEvent!!,
                 Observer {
                     startActivity(it)
                 },
@@ -121,7 +125,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             )
             LiveDataBus.observe<Pair<Class<out Activity>, ArrayMap<String, *>>>(
                 this,
-                mViewModel.mUiChangeLiveData.startActivityWithMapEvent!!,
+                viewModel.mUiChangeLiveData.startActivityWithMapEvent!!,
                 Observer {
                     startActivity(it?.first, it?.second)
                 },
@@ -130,7 +134,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             // vm 可以启动界面，并携带 Bundle，接收方可调用 getBundle 获取
             LiveDataBus.observe<Pair<Class<out Activity>, Bundle?>>(
                 this,
-                mViewModel.mUiChangeLiveData.startActivityEventWithBundle!!,
+                viewModel.mUiChangeLiveData.startActivityEventWithBundle!!,
                 Observer {
                     startActivity(it?.first, bundle = it?.second)
                 },
@@ -139,12 +143,12 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         }
 
         if (isViewModelNeedStartForResult()) {
-            mViewModel.mUiChangeLiveData.initStartActivityForResultEvent()
+            viewModel.mUiChangeLiveData.initStartActivityForResultEvent()
 
             // vm 可以启动界面
             LiveDataBus.observe<Class<out Activity>>(
                 this,
-                mViewModel.mUiChangeLiveData.startActivityForResultEvent!!,
+                viewModel.mUiChangeLiveData.startActivityForResultEvent!!,
                 Observer {
                     startActivityForResult(it)
                 },
@@ -153,7 +157,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             // vm 可以启动界面，并携带 Bundle，接收方可调用 getBundle 获取
             LiveDataBus.observe<Pair<Class<out Activity>, Bundle?>>(
                 this,
-                mViewModel.mUiChangeLiveData.startActivityForResultEventWithBundle!!,
+                viewModel.mUiChangeLiveData.startActivityForResultEventWithBundle!!,
                 Observer {
                     startActivityForResult(it?.first, bundle = it?.second)
                 },
@@ -161,7 +165,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             )
             LiveDataBus.observe<Pair<Class<out Activity>, ArrayMap<String, *>>>(
                 this,
-                mViewModel.mUiChangeLiveData.startActivityForResultEventWithMap!!,
+                viewModel.mUiChangeLiveData.startActivityForResultEventWithMap!!,
                 Observer {
                     startActivityForResult(it?.first, it?.second)
                 },
@@ -170,10 +174,10 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         }
 
         if (isNeedLoadingDialog()) {
-            mViewModel.mUiChangeLiveData.initLoadingDialogEvent()
+            viewModel.mUiChangeLiveData.initLoadingDialogEvent()
 
             // 显示waitLoading
-            mViewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
+            viewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
                 it ?: return@Observer
                 if (it.isExtendsMsgDialog) {
                     extUiEvent(it)
@@ -216,7 +220,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
 
     open fun initMsgDialog(msgDialog: MsgDialog, it: UIEvent) {
-        DialogUtil.initMsgDialog(msgDialog,it)
+        DialogUtil.initMsgDialog(msgDialog, it)
     }
 
     @CallSuper
@@ -360,7 +364,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     val bindingIsInit: Boolean
         get() = this::mBinding.isInitialized
 
-    val modelIsInit :Boolean
+    val modelIsInit: Boolean
         get() = this::mViewModel.isInitialized
 
     override fun onDestroy() {

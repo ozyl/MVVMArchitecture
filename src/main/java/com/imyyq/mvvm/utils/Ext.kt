@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -135,12 +135,14 @@ fun <T> launch(
 }
 
 
-inline fun <reified T : BaseViewModel<*>> ViewModelStoreOwner.getViewModel(): T {
+inline fun <reified T : BaseViewModel<*>> Fragment.getViewModel(): T {
 
     return ViewModelProvider(
         this,
         ViewModelProvider.AndroidViewModelFactory(BaseApp.getInstance())
-    ).get(T::class.java)
+    ).get(T::class.java).apply {
+        lifecycle.addObserver(this)
+    }
 }
 
 inline fun <reified T : BaseViewModel<*>> FragmentActivity.getViewModel(): T {
