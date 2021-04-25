@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import com.apkfuns.logutils.LogUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -60,20 +59,23 @@ fun obtainString(@StringRes resId: Int, vararg formatArgs: Any): String {
     return BaseApp.getInstance().getString(resId, *formatArgs)
 }
 
-inline fun <reified T> String.toBean(gson:Gson=commonGson): T? =
+inline fun <reified T> String.toBeanOrNull(gson:Gson=commonGson): T? =
     try {
-        gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+        this.toBean<T>()
     } catch (e: Exception) {
         e.printStackTrace()
         LogUtils.e("Json转换实体失败，转换内容：$this，错误信息：$e")
         null
     }
 
+inline fun <reified T> String.toBean(gson:Gson=commonGson): T? =
+        gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+
 val String?.isJson: Boolean
     get() {
         this?:return false
         return try {
-            val jsonElement = this.toBean<JsonElement>()
+            val jsonElement = this.toBeanOrNull<JsonElement>()
             jsonElement?.run {
                 jsonElement.isJsonObject || jsonElement.isJsonArray
             }?:false
@@ -83,7 +85,7 @@ val String?.isJson: Boolean
     }
 
 inline fun <reified K, reified V> Any.toMap(): Map<K, V> {
-    return commonGson.toJson(this).toBean()?: mutableMapOf<K,V>()
+    return commonGson.toJson(this).toBeanOrNull()?: mutableMapOf<K,V>()
 }
 
 val commonGson: Gson = GsonBuilder().apply {
