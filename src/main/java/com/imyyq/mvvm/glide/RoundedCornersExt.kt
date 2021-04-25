@@ -34,8 +34,8 @@ class RoundedCornersExt(
             toTransform,
             topLeft.toFloat(),
             topRight.toFloat(),
+            bottomRight.toFloat(),
             bottomLeft.toFloat(),
-            bottomRight.toFloat()
         )
     }
 
