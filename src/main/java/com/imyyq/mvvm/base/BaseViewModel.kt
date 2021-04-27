@@ -46,7 +46,7 @@ open class BaseViewModel<M : BaseModel>(app: Application) : AndroidViewModel(app
     private lateinit var mCompositeDisposable: Any
     private lateinit var mCallList: MutableList<Call<*>>
 
-    internal val mUiChangeLiveData by lazy { UiChangeLiveData() }
+    val mUiChangeLiveData by lazy { UiChangeLiveData() }
 
     internal var mBundle: Bundle? = null
     internal var mIntent: Intent? = null

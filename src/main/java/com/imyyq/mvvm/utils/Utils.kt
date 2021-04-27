@@ -10,10 +10,23 @@ import android.os.Parcelable
 import android.view.View
 import android.view.ViewGroup
 import androidx.collection.ArrayMap
+import androidx.lifecycle.MutableLiveData
 import com.imyyq.mvvm.R
 import java.io.Serializable
 
-fun Any.isInUIThread() = Looper.getMainLooper().thread == Thread.currentThread()
+fun isInUIThread() = Looper.getMainLooper().thread == Thread.currentThread()
+
+fun <T> MutableLiveData<T?>?.refresh(newValue:T?) {
+    if (isInUIThread()) {
+        this?.value = newValue
+    } else {
+        this?.postValue(newValue)
+    }
+}
+
+fun <T> MutableLiveData<T?>?.refreshSelf() {
+    this.refresh(this?.value)
+}
 
 object Utils {
     val isNeedCheckPermission: Boolean

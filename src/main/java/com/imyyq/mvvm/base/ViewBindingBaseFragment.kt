@@ -187,9 +187,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                         waitDialog.hintMsg = it.msg
                         waitDialog.nullOrEmptyGone = it.nullOrEmptyGone
                         waitDialog.isCancelable = it.isCancelable
-                        (activity as? AppCompatActivity?)?.run {
-                            waitDialog.show(this)
-                        }
+                        waitDialog.show(this)
                     }
                     UIEventType.DIALOG_DISMISS -> {
                         waitDialog.dismiss()
