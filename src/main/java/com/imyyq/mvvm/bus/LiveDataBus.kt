@@ -172,15 +172,12 @@ object LiveDataBus {
      */
     fun removeStickyObserver(registrants: Any) {
         mStickyLiveDataMap.forEach { entry ->
-            val iterator = entry.value?.iterator()?:return@forEach
-            while (iterator.hasNext()) {
-                val it = iterator.next()
+            entry.value?.forEach {
                 val isRemove = registrants == it.registrants
                 if (isRemove) {
                     it.observer?.let { observer -> it.liveData.removeObserver(observer) }
                     it.observer = null
                     it.registrants = null
-                    iterator.remove()
                 }
             }
         }
