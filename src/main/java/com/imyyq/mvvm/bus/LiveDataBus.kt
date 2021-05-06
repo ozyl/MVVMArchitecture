@@ -216,7 +216,7 @@ object LiveDataBus {
             newStickyData
         }?.toMutableList()
 
-        mStickyLiveDataMap.remove(tag)
+        removeSticky(tag)
         mStickyLiveDataMap[tag] = newList
     }
 
