@@ -197,6 +197,30 @@ object LiveDataBus {
     }
 
     /**
+     * 根据 [tag] 只移除发送者，不移除整个事件和观察者
+     */
+    fun removeStickySender(tag: Any) {
+        val list = mStickyLiveDataMap[tag]
+
+        val newList = list?.map {
+            val newStickyData = it.copy(liveData = MutableLiveData())
+            newStickyData.run {
+                observer?.run {
+                    if (registrants is LifecycleOwner) {
+                        liveData.observe(registrants as LifecycleOwner, this)
+                    } else {
+                        liveData.observeForever(this)
+                    }
+                }
+            }
+            newStickyData
+        }?.toMutableList()
+
+        mStickyLiveDataMap.remove(tag)
+        mStickyLiveDataMap[tag] = newList
+    }
+
+    /**
      * 发送消息，只要是相同的 tag，就会触发对应的 LiveData，不管这个 tag 是在哪里注册的。包括粘性事件，也可以接收普通的事件。
      */
     fun send(
