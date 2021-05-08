@@ -2,6 +2,7 @@ package com.imyyq.mvvm.utils
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -12,6 +13,7 @@ import android.content.pm.ResolveInfo
 import android.view.View
 import com.apkfuns.logutils.LogUtils
 import com.hjq.permissions.XXPermissions
+import com.imyyq.mvvm.app.AppActivityManager
 import com.imyyq.mvvm.app.BaseApp
 
 
@@ -71,13 +73,13 @@ object AppUtil {
      * 取得版本名称
      */
     val versionName: String
-        get() = defPackageInfo?.versionName?:""
+        get() = defPackageInfo?.versionName ?: ""
 
     /**
      * 取得版本号
      */
     val versionCode: Int
-        get() = defPackageInfo?.versionCode?:-1
+        get() = defPackageInfo?.versionCode ?: -1
 
     /**
      * 获取应用的信息，0代表是获取版本信息
@@ -136,7 +138,7 @@ object AppUtil {
      */
     fun gotoAppDetailsSettings(
         context: Context,
-        permissions:List<String>?
+        permissions: List<String>?
     ) {
         XXPermissions.startPermissionActivity(context, permissions);
     }
@@ -148,10 +150,33 @@ object AppUtil {
         val pm = context.packageManager
         val intent = pm.getLaunchIntentForPackage(packageName)
         if (null != intent) {
+            if (context is Application) {
+                AppActivityManager.current()?.run {
+                    this.startActivity(intent)
+                    return true
+                } ?: kotlin.run {
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+            }
             context.startActivity(intent)
             return true
         }
         return false
+    }
+    /**
+     * 打开指定包名的应用
+     */
+    fun startActivityByPackage(packageName: String): Boolean {
+        return startActivityByPackage(BaseApp.getInstance(),packageName)
+    }
+
+    fun startLaunchActivity(){
+        defPackageInfo?.packageName?.run {
+            val result = startActivityByPackage(
+                this
+            )
+            LogUtils.d("跳转$this 启动页，结果：$result")
+        }
     }
 
     /**
@@ -215,7 +240,6 @@ object AppUtil {
     fun isDebug(): Boolean {
         return isDebug ?: false
     }
-
 
 
     /**
