@@ -210,6 +210,12 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                         waitDialog.dismiss()
                         msgDialog.dismiss()
                     }
+                    UIEventType.DIALOG_DISMISS_WAIT -> {
+                        waitDialog.dismiss()
+                    }
+                    UIEventType.DIALOG_DISMISS_MSG -> {
+                        msgDialog.dismiss()
+                    }
                     UIEventType.DIALOG_MSG -> {
                         initMsgDialog(msgDialog, it)
                         msgDialog.show(this)

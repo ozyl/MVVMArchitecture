@@ -193,6 +193,12 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                         waitDialog.dismiss()
                         msgDialog.dismiss()
                     }
+                    UIEventType.DIALOG_DISMISS_WAIT -> {
+                        waitDialog.dismiss()
+                    }
+                    UIEventType.DIALOG_DISMISS_MSG -> {
+                        msgDialog.dismiss()
+                    }
                     UIEventType.DIALOG_MSG -> {
                         val dialog =
                             if (it.tag != null) {
