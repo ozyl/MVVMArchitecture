@@ -1,6 +1,7 @@
 package com.imyyq.mvvm.utils
 
 import com.fenxiangbuy.dialog.MsgDialog
+import com.fenxiangbuy.dialog.WaitDialog
 import com.imyyq.mvvm.base.UIEvent
 
 object DialogUtil {
@@ -22,5 +23,11 @@ object DialogUtil {
             click = it.cancelVoidCallback
             text = it.cancelText
         }
+    }
+
+    fun initWaitDialog(waitDialog: WaitDialog,it: UIEvent){
+        waitDialog.hintMsg = it.msg
+        waitDialog.nullOrEmptyGone = it.nullOrEmptyGone
+        waitDialog.isCancelable = it.isCancelable
     }
 }
