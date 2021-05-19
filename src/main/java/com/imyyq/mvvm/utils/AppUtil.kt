@@ -123,14 +123,8 @@ object AppUtil {
      */
     fun isAppExist(packageName: String): Boolean {
         val packageManager = BaseApp.getInstance().packageManager
-        // 获取所有已安装程序的包信息
-        val list = packageManager.getInstalledPackages(0)
-        for (i in list.indices) {
-            if (list[i].packageName.equals(packageName, ignoreCase = true)) {
-                return true
-            }
-        }
-        return false
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        return intent!=null
     }
 
     /**
