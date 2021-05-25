@@ -22,8 +22,8 @@ object AppUtil {
     /**
      * 根据 view，获取其关联的 activity
      */
-    fun getActivityByView(view: View): Activity? {
-        return getActivityByContext(view.context)
+    fun getActivityByView(view: View?): Activity? {
+        return getActivityByContext(view?.context)
     }
 
     /**
