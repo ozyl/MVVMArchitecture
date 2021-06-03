@@ -16,7 +16,7 @@ import java.io.Serializable
 
 fun isInUIThread() = Looper.getMainLooper().thread == Thread.currentThread()
 
-fun <T> MutableLiveData<T?>?.refresh(newValue:T?) {
+fun <T> MutableLiveData<T>?.refresh(newValue:T?) {
     if (isInUIThread()) {
         this?.value = newValue
     } else {
@@ -24,7 +24,7 @@ fun <T> MutableLiveData<T?>?.refresh(newValue:T?) {
     }
 }
 
-fun <T> MutableLiveData<T?>?.refreshSelf() {
+fun <T> MutableLiveData<T>?.refreshSelf() {
     this.refresh(this?.value)
 }
 
