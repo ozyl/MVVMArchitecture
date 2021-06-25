@@ -3,13 +3,14 @@ package com.imyyq.mvvm.app
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import java.lang.ref.WeakReference
 
 /**
  * App 状态监听器，可用于判断应用是在后台还是在前台
  */
 object AppStateTracker {
     private var mIsTract = false
-    private var mChangeListener: MutableList<AppStateChangeListener> = mutableListOf()
+    private var mChangeListener: MutableList<WeakReference<AppStateChangeListener>> = mutableListOf()
     const val STATE_FOREGROUND = 0
     const val STATE_BACKGROUND = 1
     var currentState = STATE_BACKGROUND
@@ -25,7 +26,7 @@ object AppStateTracker {
             mIsTract = true
             ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleChecker())
         }
-        mChangeListener.add(appStateChangeListener)
+        mChangeListener.add(WeakReference(appStateChangeListener))
     }
 
     interface AppStateChangeListener {
@@ -37,14 +38,14 @@ object AppStateTracker {
         override fun onResume(owner: LifecycleOwner) {
             currentState = STATE_FOREGROUND
             mChangeListener.forEach {
-                it.appTurnIntoForeground()
+                it.get()?.appTurnIntoForeground()
             }
         }
 
         override fun onPause(owner: LifecycleOwner) {
             currentState = STATE_BACKGROUND
             mChangeListener.forEach {
-                it.appTurnIntoBackground()
+                it.get()?.appTurnIntoBackground()
             }
         }
     }
