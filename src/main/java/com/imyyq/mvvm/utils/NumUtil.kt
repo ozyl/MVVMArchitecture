@@ -1,5 +1,7 @@
 package com.imyyq.mvvm.utils
 
+import android.util.Log
+import com.apkfuns.logutils.LogUtils
 import java.math.BigDecimal
 
 object NumUtil {
@@ -32,4 +34,26 @@ object NumUtil {
     fun Number.roundDecimalPlaces(scale:Int=2, roundingMode:Int=BigDecimal.ROUND_HALF_UP) =
         BigDecimal(this.toString()).setScale(scale,roundingMode).toDouble()
 
+    /**
+     * 转换到目标类型
+     */
+    inline fun <reified T:Number> Number.asValue(enableWarnLog:Boolean=true): T {
+
+        val result = when (T::class.java) {
+            Integer::class.java -> this.toInt()
+            Double::class.java -> this.toDouble()
+            Long::class.java -> this.toLong()
+            java.lang.Float::class.java -> this.toFloat()
+            Float::class.java -> this.toFloat()
+            BigDecimal::class.java -> this.toDouble().toBigDecimal()
+            else -> throw Exception("未处理该类型${T::class.java}")
+        } as T
+        if (enableWarnLog && this.toDouble() != result.toDouble()){
+            repeat(5) {
+                LogUtils.e("NumUtil->请注意，精度出现丢失,原始值：$this 转换后：$result;")
+            }
+            LogUtils.e(Log.getStackTraceString(Throwable()))
+        }
+        return result
+    }
 }

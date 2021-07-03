@@ -1,9 +1,11 @@
 package com.imyyq.mvvm.utils
 
+import android.app.Activity
 import android.content.Context
 import android.os.IBinder
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.fragment.app.Fragment
 import com.imyyq.mvvm.app.BaseApp
 
 object InputMethodUtil {
@@ -26,6 +28,19 @@ object InputMethodUtil {
             Context.INPUT_METHOD_SERVICE
         ) as? InputMethodManager
         methodManager?.hideSoftInputFromWindow(binder, 0)
+    }
+
+    fun closeInputMethod(activity: Activity?) {
+        activity?.run {
+            currentFocus?.windowToken?.run {
+                closeInputMethod(this)
+            }
+        }
+    }
+    fun closeInputMethod(fragment: Fragment?) {
+        fragment?.run {
+            closeInputMethod(activity)
+        }
     }
 
     /**

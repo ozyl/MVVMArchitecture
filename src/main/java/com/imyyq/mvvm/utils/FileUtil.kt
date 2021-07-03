@@ -8,9 +8,7 @@ import android.provider.MediaStore
 import com.apkfuns.logutils.LogUtils
 import com.imyyq.mvvm.app.BaseApp
 import org.json.JSONException
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.util.*
 
 object FileUtil {
@@ -278,5 +276,22 @@ object FileUtil {
         }
         // 删除当前目录
         return isDeleteSelf && dirFile.delete()
+    }
+
+    /**
+     * 获取资源文件夹下文本
+     */
+    fun getAssetsFileText(context: Context,fileName:String):String{
+        val strBuilder=StringBuilder()
+        val assetManager=context.assets
+        val bf = BufferedReader(InputStreamReader(assetManager.open(fileName)))
+        bf.use {
+            var line: String?
+            while (it.readLine().also {newLine-> line = newLine } !=null){
+                strBuilder.append(line)
+            }
+        }
+        bf.close()
+        return strBuilder.toString()
     }
 }
