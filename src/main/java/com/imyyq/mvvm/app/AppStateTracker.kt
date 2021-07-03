@@ -1,16 +1,14 @@
 package com.imyyq.mvvm.app
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
-import java.lang.ref.WeakReference
+import androidx.lifecycle.*
+import com.apkfuns.logutils.LogUtils
 
 /**
  * App 状态监听器，可用于判断应用是在后台还是在前台
  */
 object AppStateTracker {
     private var mIsTract = false
-    private var mChangeListener: MutableList<WeakReference<AppStateChangeListener>> = mutableListOf()
+    private var mChangeListener: MutableList<AppStateChangeListener> = mutableListOf()
     const val STATE_FOREGROUND = 0
     const val STATE_BACKGROUND = 1
     var currentState = STATE_BACKGROUND
@@ -26,7 +24,18 @@ object AppStateTracker {
             mIsTract = true
             ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleChecker())
         }
-        mChangeListener.add(WeakReference(appStateChangeListener))
+        mChangeListener.add(appStateChangeListener)
+    }
+
+    fun track(lifecycleOwner: LifecycleOwner,appStateChangeListener: AppStateChangeListener) {
+        track(appStateChangeListener)
+        lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                LogUtils.d("生命周期->移除前后台监听")
+                mChangeListener.remove(appStateChangeListener)
+            }
+        })
     }
 
     interface AppStateChangeListener {
@@ -38,14 +47,14 @@ object AppStateTracker {
         override fun onResume(owner: LifecycleOwner) {
             currentState = STATE_FOREGROUND
             mChangeListener.forEach {
-                it.get()?.appTurnIntoForeground()
+                it.appTurnIntoForeground()
             }
         }
 
         override fun onPause(owner: LifecycleOwner) {
             currentState = STATE_BACKGROUND
             mChangeListener.forEach {
-                it.get()?.appTurnIntoBackground()
+                it.appTurnIntoBackground()
             }
         }
     }
