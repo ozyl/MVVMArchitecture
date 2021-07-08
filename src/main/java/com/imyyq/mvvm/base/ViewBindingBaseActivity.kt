@@ -36,13 +36,18 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     protected lateinit var mBinding: V
     protected lateinit var mViewModel: VM
 
-    val waitDialog by lazy {
-        WaitDialog()
-    }
+    var waitDialog: WaitDialog? = null
+        get() {
+            if (field == null) field = WaitDialog()
+            return field
+        }
 
-    val msgDialog by lazy {
-        MsgDialog()
-    }
+
+    var msgDialog: MsgDialog? = null
+        get() {
+            if (field == null) field = MsgDialog()
+            return field
+        }
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
@@ -201,22 +206,26 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
                 }
                 when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
-                        DialogUtil.initWaitDialog(waitDialog,it)
-                        waitDialog.show(this)
+                        waitDialog?.run {
+                            DialogUtil.initWaitDialog(this,it)
+                            this.show(this@ViewBindingBaseActivity)
+                        }
                     }
                     UIEventType.DIALOG_DISMISS -> {
-                        waitDialog.dismiss()
-                        msgDialog.dismiss()
+                        waitDialog?.dismiss()
+                        msgDialog?.dismiss()
                     }
                     UIEventType.DIALOG_DISMISS_WAIT -> {
-                        waitDialog.dismiss()
+                        waitDialog?.dismiss()
                     }
                     UIEventType.DIALOG_DISMISS_MSG -> {
-                        msgDialog.dismiss()
+                        msgDialog?.dismiss()
                     }
                     UIEventType.DIALOG_MSG -> {
-                        initMsgDialog(msgDialog, it)
-                        msgDialog.show(this)
+                        msgDialog?.run {
+                            initMsgDialog(this, it)
+                            this.show(this@ViewBindingBaseActivity)
+                        }
                     }
                 }
             })

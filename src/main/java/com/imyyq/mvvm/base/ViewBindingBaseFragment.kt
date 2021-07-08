@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
-import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -37,13 +36,18 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
-    val waitDialog by lazy {
-        WaitDialog()
-    }
+    var waitDialog: WaitDialog? = null
+        get() {
+            if (field == null) field = WaitDialog()
+            return field
+        }
 
-    val msgDialog by lazy {
-        MsgDialog()
-    }
+
+    var msgDialog: MsgDialog? = null
+        get() {
+            if (field == null) field = MsgDialog()
+            return field
+        }
 
     private lateinit var mLoadService: LoadService<*>
 
@@ -184,18 +188,20 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                 }
                 when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
-                        DialogUtil.initWaitDialog(waitDialog,it)
-                        waitDialog.show(this)
+                        waitDialog?.run {
+                            DialogUtil.initWaitDialog(this, it)
+                            this.show(this@ViewBindingBaseFragment)
+                        }
                     }
                     UIEventType.DIALOG_DISMISS -> {
-                        waitDialog.dismiss()
-                        msgDialog.dismiss()
+                        waitDialog?.dismiss()
+                        msgDialog?.dismiss()
                     }
                     UIEventType.DIALOG_DISMISS_WAIT -> {
-                        waitDialog.dismiss()
+                        waitDialog?.dismiss()
                     }
                     UIEventType.DIALOG_DISMISS_MSG -> {
-                        msgDialog.dismiss()
+                        msgDialog?.dismiss()
                     }
                     UIEventType.DIALOG_MSG -> {
                         val dialog =
@@ -204,16 +210,15 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                             } else {
                                 msgDialog
                             }
-                        initMsgDialog(dialog, it)
-                        (activity as? AppCompatActivity?)?.run {
-                            dialog.show(this)
+                        dialog?.run {
+                            initMsgDialog(this, it)
+                            this.show(this@ViewBindingBaseFragment)
                         }
                     }
                 }
             })
         }
     }
-
 
     open fun extUiEvent(it: UIEvent) {
 
@@ -370,7 +375,6 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     override fun onDestroy() {
         super.onDestroy()
-
         // 界面销毁时移除 vm 的生命周期感知
         if (this::mViewModel.isInitialized) {
             lifecycle.removeObserver(mViewModel)
