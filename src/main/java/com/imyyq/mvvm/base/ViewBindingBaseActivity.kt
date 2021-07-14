@@ -86,6 +86,10 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         lifecycle.addObserver(mViewModel)
     }
 
+    override fun setIntent(newIntent: Intent?) {
+        mViewModel.mIntent = getArgumentsIntent()
+        super.setIntent(newIntent)
+    }
 
     open fun contentView() = mBinding.root
 
