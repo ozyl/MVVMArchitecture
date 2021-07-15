@@ -120,73 +120,73 @@ object Utils {
         map?.forEach { entry ->
             @Suppress("UNCHECKED_CAST")
             when (val value = entry.value) {
-                is Boolean -> {
+                is Boolean? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is BooleanArray -> {
+                is BooleanArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Byte -> {
+                is Byte? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is ByteArray -> {
+                is ByteArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Char -> {
+                is Char? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is CharArray -> {
+                is CharArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Short -> {
+                is Short? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is ShortArray -> {
+                is ShortArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Int -> {
+                is Int? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is IntArray -> {
+                is IntArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Long -> {
+                is Long? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is LongArray -> {
+                is LongArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Float -> {
+                is Float? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is FloatArray -> {
+                is FloatArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Double -> {
+                is Double? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is DoubleArray -> {
+                is DoubleArray? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is String -> {
+                is String? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is CharSequence -> {
+                is CharSequence? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Parcelable -> {
+                is Parcelable? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Serializable -> {
+                is Serializable? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Bundle -> {
+                is Bundle? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is Intent -> {
+                is Intent? -> {
                     intent.putExtra(entry.key, value)
                 }
-                is ArrayList<*> -> {
+                is ArrayList<*>? -> {
                     val any = if (value.isNotEmpty()) {
                         value[0]
                     } else null
@@ -208,7 +208,7 @@ object Utils {
                         }
                     }
                 }
-                is Array<*> -> {
+                is Array<*>? -> {
                     when {
                         value.isArrayOf<String>() -> {
                             intent.putExtra(entry.key, value as Array<String>)
