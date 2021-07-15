@@ -118,6 +118,7 @@ object Utils {
                 Intent()
 
         map?.forEach { entry ->
+            if (entry.value == null) return@forEach
             @Suppress("UNCHECKED_CAST")
             when (val value = entry.value) {
                 is Boolean -> {
