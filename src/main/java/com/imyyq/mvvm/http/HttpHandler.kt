@@ -25,6 +25,8 @@ object HttpHandler {
      * [onSuccess] 状态码对了就回调
      * [onResult] 状态码对了，且实体不是 null 才回调
      * [onFailed] 有错误发生，可能是服务端错误，可能是数据错误，详见 code 错误码和 msg 错误信息
+     * [onGlobalFailed] 有全局错误发生，可能是服务端错误，详见 code 错误码和 msg 错误信息
+     * [onFailedPreHandle] 失败预处理，可拦截不经过onFailed,默认值为全局失败处理
      */
     fun <T> handleResult(
         entity: IBaseResponse<T?>?,
@@ -32,6 +34,8 @@ object HttpHandler {
         onResult: ((t: T) -> Unit)?,
         onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
         onResultOrNull: ((t: T?) -> Unit)?=null,
+        onGlobalFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
+        onFailedPreHandle: HttpFailedCall?=null,
         ) {
         // 防止实体为 null
         if (entity == null) {
@@ -55,8 +59,10 @@ object HttpHandler {
                 entity.data()?.let { onResult?.invoke(it) }
             }
             else -> {
-                if (failedCall?.handle(entity) != true){
+                if ((onFailedPreHandle?:failedCall)?.handle(entity) != true){
                     onFailed?.invoke(code, msg, entity.data())
+                }else{
+                    onGlobalFailed?.invoke(code,msg,entity.data())
                 }
             }
         }
