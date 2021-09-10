@@ -140,13 +140,15 @@ object AppUtil {
     /**
      * 打开指定包名的应用
      */
-    fun startActivityByPackage(context: Context, packageName: String): Boolean {
+    fun startActivityByPackage(context: Context, packageName: String,isCleanTask: Boolean=false): Boolean {
         val pm = context.packageManager
         val intent = pm.getLaunchIntentForPackage(packageName)
         if (null != intent) {
             if (context is Application) {
                 AppActivityManager.current()?.run {
-                    this.startActivity(intent)
+                    this.startActivity(intent.apply {
+                        if (isCleanTask) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    })
                     return true
                 } ?: kotlin.run {
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -160,14 +162,14 @@ object AppUtil {
     /**
      * 打开指定包名的应用
      */
-    fun startActivityByPackage(packageName: String): Boolean {
-        return startActivityByPackage(BaseApp.getInstance(),packageName)
+    fun startActivityByPackage(packageName: String,isCleanTask:Boolean=false): Boolean {
+        return startActivityByPackage(BaseApp.getInstance(),packageName,isCleanTask)
     }
 
     fun startLaunchActivity(){
         defPackageInfo?.packageName?.run {
             val result = startActivityByPackage(
-                this
+                this,true
             )
             LogUtils.d("跳转$this 启动页，结果：$result")
         }
