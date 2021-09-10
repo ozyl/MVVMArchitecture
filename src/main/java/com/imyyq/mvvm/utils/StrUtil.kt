@@ -13,4 +13,9 @@ object StrUtil {
         return s.isNullOrBlank()
     }
 
+    @JvmStatic
+    fun notEmpty(s: CharSequence?): Boolean {
+        return !isEmpty(s)
+    }
+
 }
