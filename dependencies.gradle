@@ -133,7 +133,7 @@ ext {
  * @param handler repositories
  */
 static def addRepository(RepositoryHandler handler) {
-    handler.maven { url "https://maven.aliyun.com/repository/central" }
+    handler.mavenCentral()
     handler.maven { url "https://maven.aliyun.com/repository/google" }
     handler.maven { url "https://maven.aliyun.com/repository/jcenter" }
     handler.maven { url "https://maven.aliyun.com/repository/public" }
