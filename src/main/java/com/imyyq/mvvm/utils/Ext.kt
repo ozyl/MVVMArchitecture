@@ -84,6 +84,11 @@ val String?.isJson: Boolean
         }
     }
 
+
+fun String?.nullOrBlankReplace(replaceStr:String):String{
+    return  if (this.isNullOrBlank()) replaceStr else this
+}
+
 inline fun <reified K, reified V> Any.toMap(): Map<K, V> {
     return commonGson.toJson(this).toBeanOrNull()?: mutableMapOf<K,V>()
 }
