@@ -108,7 +108,7 @@ object HttpRequest {
      * 如果有不同的 baseURL，那么可以相同 baseURL 的接口都放在一个 Service 钟，通过此方法来获取
      */
     @JvmStatic
-    fun <T> getService(cls: Class<T>, host: String, vararg interceptors: Interceptor?): T {
+    fun <T> getService(cls: Class<T>, host: String, vararg interceptors: Interceptor?,clientWrapper:((OkHttpClient)->Unit)?=null): T {
         val name = cls.name
 
         var obj: Any? = mServiceMap[name]
@@ -137,6 +137,7 @@ object HttpRequest {
                         .build()
                 )
             val client = httpClientBuilder.build()
+            clientWrapper?.invoke(client)
             val builder = Retrofit.Builder().client(client)
                 // 基础url
                 .baseUrl(host)
@@ -206,15 +207,15 @@ object HttpRequest {
 
 
     @JvmStatic
-    fun <T> getService(cls: Class<T>, vararg interceptors: Interceptor?): T {
+    fun <T> getService(cls: Class<T>, vararg interceptors: Interceptor?,clientWrapper:((OkHttpClient)->Unit)?=null): T {
         if (!this::mDefaultBaseUrl.isInitialized) {
             throw RuntimeException("必须初始化 mBaseUrl")
         }
         if (this::mDefaultHeader.isInitialized) {
             val headers = HeaderInterceptor(mDefaultHeader)
-            return getService(cls, mDefaultBaseUrl, headers, *interceptors)
+            return getService(cls, mDefaultBaseUrl, headers, *interceptors,clientWrapper = clientWrapper)
         }
-        return getService(cls, mDefaultBaseUrl, *interceptors)
+        return getService(cls, mDefaultBaseUrl, *interceptors,clientWrapper =clientWrapper)
     }
 
     /**
