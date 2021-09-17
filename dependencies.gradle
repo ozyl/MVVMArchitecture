@@ -115,7 +115,7 @@ ext {
             mmkv                     : "com.tencent:mmkv-static:1.2.6",
 
             parallaxBackLayout       : "com.github.anzewei:parallaxbacklayout:1.1.9",
-            toast                    : "com.hjq:toast:8.6",
+            toast                    : "com.github.getActivity:ToastUtils:9.5",
             basePopup                : "com.github.razerdp:BasePopup:2.2.8",
             okHttp                   : "com.squareup.okhttp3:okhttp:${Versions.okHttp}",
     ]
