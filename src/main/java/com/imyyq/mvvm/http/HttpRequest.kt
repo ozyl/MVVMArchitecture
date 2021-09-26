@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
-import androidx.collection.ArrayMap
 import com.apkfuns.logutils.LogUtils
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
@@ -31,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import string
 import java.io.IOException
 import java.net.Proxy
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
@@ -48,13 +48,13 @@ object HttpRequest {
     const val MODIFY_BASE_URL_KEY = "modifyBaseUrl"
 
     // 缓存 service
-    private val mServiceMap = ArrayMap<String, Any>()
+    private val mServiceMap = ConcurrentHashMap<String, Any?>()
 
     // 默认的 baseUrl
     lateinit var mDefaultBaseUrl: String
 
     // 默认的请求头
-    private lateinit var mDefaultHeader: ArrayMap<String, String>
+    private lateinit var mDefaultHeader: ConcurrentHashMap<String, String>
 
     /**
      * 存储 baseUrl，以便可以动态更改
@@ -73,7 +73,7 @@ object HttpRequest {
     @JvmStatic
     fun addDefaultHeader(name: String, value: String) {
         if (!this::mDefaultHeader.isInitialized) {
-            mDefaultHeader = ArrayMap()
+            mDefaultHeader = ConcurrentHashMap()
         }
         mDefaultHeader[name] = value
     }
