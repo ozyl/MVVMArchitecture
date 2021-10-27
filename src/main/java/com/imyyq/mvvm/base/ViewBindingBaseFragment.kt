@@ -25,6 +25,7 @@ import com.kingja.loadsir.core.LoadSir
 import com.kingja.loadsir.core.Transport
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out BaseModel>>(
     private val sharedViewModel: Boolean = false
@@ -36,16 +37,16 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     private lateinit var mStartActivityForResult: ActivityResultLauncher<Intent>
 
-    var waitDialog: WaitDialog? = null
+    var waitDialog = WeakReference<WaitDialog>(null)
         get() {
-            if (field == null) field = WaitDialog()
+            if (field.get() == null) field = WeakReference(WaitDialog())
             return field
         }
 
 
-    var msgDialog: MsgDialog? = null
+    var msgDialog = WeakReference<MsgDialog>(null)
         get() {
-            if (field == null) field = MsgDialog()
+            if (field.get() == null) field = WeakReference(MsgDialog())
             return field
         }
 
@@ -188,27 +189,27 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
                 }
                 when (it.type) {
                     UIEventType.DIALOG_WAIT -> {
-                        waitDialog?.run {
+                        waitDialog.get()?.run {
                             DialogUtil.initWaitDialog(this, it)
                             this.show(this@ViewBindingBaseFragment)
                         }
                     }
                     UIEventType.DIALOG_DISMISS -> {
-                        waitDialog?.dismiss()
-                        msgDialog?.dismiss()
+                        waitDialog.get()?.dismiss()
+                        msgDialog.get()?.dismiss()
                     }
                     UIEventType.DIALOG_DISMISS_WAIT -> {
-                        waitDialog?.dismiss()
+                        waitDialog.get()?.dismiss()
                     }
                     UIEventType.DIALOG_DISMISS_MSG -> {
-                        msgDialog?.dismiss()
+                        msgDialog.get()?.dismiss()
                     }
                     UIEventType.DIALOG_MSG -> {
                         val dialog =
                             if (it.tag != null) {
                                 MsgDialog()
                             } else {
-                                msgDialog
+                                msgDialog.get()
                             }
                         dialog?.run {
                             initMsgDialog(this, it)
