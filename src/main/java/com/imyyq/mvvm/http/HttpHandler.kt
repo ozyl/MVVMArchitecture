@@ -29,7 +29,7 @@ object HttpHandler {
      * [onFailedPreHandle] 失败预处理，可拦截不经过onFailed,默认值为全局失败处理
      */
     fun <T> handleResult(
-        entity: IBaseResponse<T?>?,
+        entity: IBaseResponse<out T?>?,
         onSuccess: (() -> Unit)? = null,
         onResult: ((t: T) -> Unit)?,
         onFailed: ((code: Int, msg: String?, data: T?) -> Unit)? = null,
