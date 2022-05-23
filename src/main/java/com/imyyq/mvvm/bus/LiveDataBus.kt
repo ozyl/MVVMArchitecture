@@ -23,7 +23,7 @@ object LiveDataBus {
      * 下同。
      */
     private val mLiveDataMap =
-        ArrayMap<Any /* registrants */, ArrayMap<Any /* tag */, Pair<MutableLiveData<Any>, Observer<Any>>>>()
+        ArrayMap<Any /* registrants */, ArrayMap<Any /* tag */, MutableList<Pair<MutableLiveData<Any>, Observer<Any>>>>>()
 
     /**
      * 粘性事件，一个 tag 对应一个列表，每个元素表示一个注册者，包含的数据在 [StickyData]
@@ -51,11 +51,13 @@ object LiveDataBus {
             mLiveDataMap[registrants] = objMap
         }
 
-        if (objMap[tag] != null) {
+        if (objMap[tag]?.firstOrNull { it.second == observer } != null) {
             return
         }
-
-        objMap[tag] = Pair(liveData as MutableLiveData<Any>, observer as Observer<Any>)
+        if (objMap[tag]==null){
+            objMap[tag] = mutableListOf()
+        }
+        objMap[tag]?.add(Pair(liveData as MutableLiveData<Any>, observer as Observer<Any>))
         if (registrants is LifecycleOwner && !isForever) {
             liveData.observe(registrants, observer)
         } else {
@@ -68,7 +70,9 @@ object LiveDataBus {
      */
     fun removeObserve(registrants: Any) {
         mLiveDataMap[registrants]?.forEach {
-            it.value?.first?.removeObserver(it.value?.second!!)
+            it.value?.forEach {
+                it.first?.removeObserver(it.second!!)
+            }
         }
         mLiveDataMap.remove(registrants)
     }
@@ -79,7 +83,9 @@ object LiveDataBus {
     fun removeObserve(registrants: Any, tag: Any) {
         val objMap = mLiveDataMap[registrants]
         objMap?.get(tag)?.let {
-            it.first?.removeObserver(it.second!!)
+            it.forEach {
+                it.first?.removeObserver(it.second!!)
+            }
             objMap.remove(tag)
         }
     }
@@ -232,9 +238,13 @@ object LiveDataBus {
             it.value.forEach inside@{ entry ->
                 if (entry.key == tag) {
                     if (inUiThread) {
-                        entry.value.first?.value = result
+                        entry.value.forEach {
+                            it.first?.value = result
+                        }
                     } else {
-                        entry.value.first?.postValue(result)
+                        entry.value.forEach {
+                            it.first?.postValue(result)
+                        }
                     }
                     return@inside
                 }
