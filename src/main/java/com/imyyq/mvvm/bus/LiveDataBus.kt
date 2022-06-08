@@ -9,6 +9,7 @@ import androidx.core.util.Pair
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.imyyq.mvvm.utils.refresh
 
 /**
  * 事件总线类，支持生命周期相关和无关的事件，支持粘性事件。
@@ -123,7 +124,7 @@ object LiveDataBus {
             if (list.isNotEmpty()) {
                 val data = list[0]
                 if (data.isValueValid) {
-                    liveData.postValue(data.liveData.value)
+                    liveData.refresh(data.liveData.value)
                 }
             }
             stickyData = StickyData(liveData, registrants, obs, false)
