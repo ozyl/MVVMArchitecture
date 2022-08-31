@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
+import cn.netdiscovery.http.interceptor.LoggingInterceptor
 import com.apkfuns.logutils.LogUtils
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
@@ -18,7 +19,6 @@ import com.imyyq.mvvm.base.IBaseResponse
 import com.imyyq.mvvm.http.interceptor.HeaderInterceptor
 import com.imyyq.mvvm.utils.AppUtil
 import com.imyyq.mvvm.utils.Utils
-import com.safframework.http.interceptor.LoggingInterceptor
 import mmkv
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
@@ -108,7 +108,13 @@ object HttpRequest {
      * 如果有不同的 baseURL，那么可以相同 baseURL 的接口都放在一个 Service 钟，通过此方法来获取
      */
     @JvmStatic
-    fun <T> getService(cls: Class<T>, host: String, vararg interceptors: Interceptor?,clientWrapper:((OkHttpClient)->Unit)?=null): T {
+    fun <T> getService(
+        cls: Class<T>,
+        host: String,
+        vararg interceptors: Interceptor?,
+        logBuilder: (LoggingInterceptor.Builder.() -> Unit)?=null,
+        clientWrapper: ((OkHttpClient) -> Unit)? = null
+    ): T {
         val name = cls.name
 
         var obj: Any? = mServiceMap[name]
@@ -127,13 +133,17 @@ object HttpRequest {
 
             httpClientBuilder
                 .addInterceptor(
-                    LoggingInterceptor.Builder()
-                        .loggable(AppUtil.isDebug())
-                        .request()
-                        .response()
-                        .hideVerticalLine()
-                        .requestTag("Request")
-                        .responseTag("Response")
+                    LoggingInterceptor.Builder().apply {
+                        (logBuilder ?: {
+                            this
+                                .loggable(AppUtil.isDebug())
+                                .request()
+                                .response()
+                                .hideVerticalLine()
+                                .requestTag("Request")
+                                .responseTag("Response")
+                        }).invoke(this)
+                    }
                         .build()
                 )
             val client = httpClientBuilder.build()
@@ -207,15 +217,26 @@ object HttpRequest {
 
 
     @JvmStatic
-    fun <T> getService(cls: Class<T>, vararg interceptors: Interceptor?,clientWrapper:((OkHttpClient)->Unit)?=null): T {
+    fun <T> getService(
+        cls: Class<T>,
+        vararg interceptors: Interceptor?,
+        clientWrapper: ((OkHttpClient) -> Unit)? = null,
+        logBuilder: (LoggingInterceptor.Builder.() -> Unit)?=null,
+    ): T {
         if (!this::mDefaultBaseUrl.isInitialized) {
             throw RuntimeException("必须初始化 mBaseUrl")
         }
         if (this::mDefaultHeader.isInitialized) {
             val headers = HeaderInterceptor(mDefaultHeader)
-            return getService(cls, mDefaultBaseUrl, headers, *interceptors,clientWrapper = clientWrapper)
+            return getService(
+                cls,
+                mDefaultBaseUrl,
+                headers,
+                *interceptors,
+                clientWrapper = clientWrapper
+            )
         }
-        return getService(cls, mDefaultBaseUrl, *interceptors,clientWrapper =clientWrapper)
+        return getService(cls, mDefaultBaseUrl, *interceptors, logBuilder = logBuilder, clientWrapper = clientWrapper)
     }
 
     /**
