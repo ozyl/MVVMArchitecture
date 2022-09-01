@@ -112,7 +112,7 @@ object HttpRequest {
         cls: Class<T>,
         host: String,
         vararg interceptors: Interceptor?,
-        logBuilder: (LoggingInterceptor.Builder.() -> Unit)?=null,
+        logBuilder: (LoggingInterceptor.Builder.() -> Unit)? = null,
         clientWrapper: ((OkHttpClient) -> Unit)? = null
     ): T {
         val name = cls.name
@@ -133,18 +133,16 @@ object HttpRequest {
 
             httpClientBuilder
                 .addInterceptor(
-                    LoggingInterceptor.Builder().apply {
-                        (logBuilder ?: {
-                            this
-                                .loggable(AppUtil.isDebug())
-                                .request()
-                                .response()
-                                .hideVerticalLine()
-                                .requestTag("Request")
-                                .responseTag("Response")
-                        }).invoke(this)
-                    }
-                        .build()
+                    LoggingInterceptor.Builder()
+                        .loggable(AppUtil.isDebug())
+                        .androidPlatform()
+                        .request()
+                        .requestTag("Request")
+                        .response()
+                        .responseTag("Response").apply {
+                            logBuilder?.invoke(this)
+                        }
+                        .hideVerticalLine().build()// 隐藏竖线边框
                 )
             val client = httpClientBuilder.build()
             clientWrapper?.invoke(client)
@@ -221,7 +219,7 @@ object HttpRequest {
         cls: Class<T>,
         vararg interceptors: Interceptor?,
         clientWrapper: ((OkHttpClient) -> Unit)? = null,
-        logBuilder: (LoggingInterceptor.Builder.() -> Unit)?=null,
+        logBuilder: (LoggingInterceptor.Builder.() -> Unit)? = null,
     ): T {
         if (!this::mDefaultBaseUrl.isInitialized) {
             throw RuntimeException("必须初始化 mBaseUrl")
@@ -236,7 +234,13 @@ object HttpRequest {
                 clientWrapper = clientWrapper
             )
         }
-        return getService(cls, mDefaultBaseUrl, *interceptors, logBuilder = logBuilder, clientWrapper = clientWrapper)
+        return getService(
+            cls,
+            mDefaultBaseUrl,
+            *interceptors,
+            logBuilder = logBuilder,
+            clientWrapper = clientWrapper
+        )
     }
 
     /**
