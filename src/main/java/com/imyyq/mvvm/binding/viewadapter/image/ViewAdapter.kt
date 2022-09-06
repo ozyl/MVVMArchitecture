@@ -62,8 +62,13 @@ fun setImageUri(
                 errorPlaceholder?.let {
                     error(it)
                 } ?: kotlin.run {
-                    val errorRes = GlobalConfig.ImageView.errorRes
-                    errorRes?.let { error(errorRes) }
+                    if (placeholder!=null){
+                        error(placeholder)
+                    }else{
+                        GlobalConfig.ImageView.errorRes?.let {
+                            error(it)
+                        }
+                    }
                 }
             }
             val transformList = mutableListOf<Transformation<Bitmap>>()
@@ -75,7 +80,7 @@ fun setImageUri(
                 transformList.add(RoundedCornersExt(DensityUtil.dp2px(it.toFloat())))
             } ?: run {
                 if (topLeftRoundingRadius != null || topRightRoundingRadius != null || bottomLeftRoundingRadius != null || bottomRightRoundingRadius != null) {
-                    if ((topRightRoundingRadius ?: 0 + (topLeftRoundingRadius
+                    if (((topRightRoundingRadius ?: 0) + (topLeftRoundingRadius
                             ?: 0) + (bottomLeftRoundingRadius ?: 0) + (bottomRightRoundingRadius
                             ?: 0)) > 0
                     ) {
