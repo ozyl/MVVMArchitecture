@@ -134,6 +134,7 @@ object AppUtil {
         context: Context,
         permissions: List<String>?
     ) {
+        if (permissions.isNullOrEmpty())return
         XXPermissions.startPermissionActivity(context, permissions);
     }
 
