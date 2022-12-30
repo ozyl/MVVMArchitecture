@@ -11,10 +11,11 @@ import com.imyyq.mvvm.binding.command.BindingConsumer
 /**
  * EditText输入文字改变的监听
  */
-@BindingAdapter(value = ["textChanged"], requireAll = false)
+@BindingAdapter(value = ["textChanged","afterTextChanged"], requireAll = false)
 fun addTextChangedListener(
     editText: EditText,
-    textChanged: BindingConsumer<String>?
+    textChanged: BindingConsumer<String>?,
+    afterTextChanged: BindingConsumer<String>?,
 ) {
     editText.addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(
@@ -34,7 +35,9 @@ fun addTextChangedListener(
             textChanged?.call(s.toString())
         }
 
-        override fun afterTextChanged(editable: Editable) {}
+        override fun afterTextChanged(editable: Editable) {
+            afterTextChanged?.call(editable.toString())
+        }
     })
 }
 
