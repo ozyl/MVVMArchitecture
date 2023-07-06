@@ -24,7 +24,6 @@ import com.kingja.loadsir.core.LoadService
 import com.kingja.loadsir.core.LoadSir
 import com.kingja.loadsir.core.Transport
 import java.lang.ref.WeakReference
-import java.util.*
 
 
 /**
@@ -59,6 +58,7 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (superOnCreateAfterIsContinue()) return
+        initStartActivityForResult()
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
@@ -299,12 +299,11 @@ abstract class ViewBindingBaseActivity<V : ViewBinding, VM : BaseViewModel<out B
         map: ArrayMap<String, *>? = null,
         bundle: Bundle? = null
     ) {
-        initStartActivityForResult()
         mStartActivityForResult.launch(Utils.getIntentByMapOrBundle(this, clz, map, bundle))
     }
 
     private fun initStartActivityForResult() {
-        if (!this::mStartActivityForResult.isInitialized) {
+        if (!this::mStartActivityForResult.isInitialized && isRegisterActivityResult()) {
             mStartActivityForResult =
                 registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                     val data = it.data ?: Intent()

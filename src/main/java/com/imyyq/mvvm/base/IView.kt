@@ -92,4 +92,6 @@ interface IView<V : ViewBinding, VM : BaseViewModel<out BaseModel>>: IArgumentsF
      * 不需要的话可以设置为 false，避免创建不必要的对象
      */
     fun isViewModelNeedStartForResult() = GlobalConfig.StartAndFinish.gIsViewModelNeedStartForResult
+
+    fun isRegisterActivityResult() = false
 }

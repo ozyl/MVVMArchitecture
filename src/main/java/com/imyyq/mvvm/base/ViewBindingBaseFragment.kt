@@ -52,6 +52,11 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     private lateinit var mLoadService: LoadService<*>
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initStartActivityForResult()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -75,7 +80,6 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initViewAndViewModel()
         initParam()
         initUiChangeLiveData()
@@ -94,7 +98,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
 
         if (readyCompleteListener != null) {
             mViewModel.mUiChangeLiveData.initRepositoryReadyCompleteEvent()
-            mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(this, Observer {
+            mViewModel.mUiChangeLiveData.repositoryReadyCompleteEvent?.observe(viewLifecycleOwner, Observer {
                 if (it == true) readyCompleteListener?.invoke()
             })
         }
@@ -181,7 +185,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             viewModel.mUiChangeLiveData.initLoadingDialogEvent()
 
             // 显示waitLoading
-            viewModel.mUiChangeLiveData.UIEvent?.observe(this, Observer {
+            viewModel.mUiChangeLiveData.UIEvent?.observe(viewLifecycleOwner, Observer {
                 it ?: return@Observer
                 if (it.isExtendsMsgDialog) {
                     extUiEvent(it)
@@ -239,7 +243,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
             ) { onLoadSirReload() }
             mLoadService.showSuccess()
             mViewModel.mUiChangeLiveData.initLoadSirEvent()
-            mViewModel.mUiChangeLiveData.loadSirEvent?.observe(this, Observer {
+            mViewModel.mUiChangeLiveData.loadSirEvent?.observe(viewLifecycleOwner, Observer {
                 if (it == null) {
                     showStatusSuccess()
                     onLoadSirSuccess()
@@ -264,11 +268,11 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
         map: ArrayMap<String, *>? = null,
         bundle: Bundle? = null
     ) {
-        initStartActivityForResult()
         mStartActivityForResult.launch(Utils.getIntentByMapOrBundle(activity, clz, map, bundle))
     }
 
     open val readyCompleteListener: (() -> Unit)? = null
+
 
 
     fun showStatusCallback(it: Class<out Callback>?) {
@@ -296,7 +300,7 @@ abstract class ViewBindingBaseFragment<V : ViewBinding, VM : BaseViewModel<out B
     }
 
     private fun initStartActivityForResult() {
-        if (!this::mStartActivityForResult.isInitialized) {
+        if (!this::mStartActivityForResult.isInitialized && isRegisterActivityResult()) {
             mStartActivityForResult =
                 registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                     val data = it.data ?: Intent()
