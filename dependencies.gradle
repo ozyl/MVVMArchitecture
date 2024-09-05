@@ -72,7 +72,7 @@ ext {
             bindingAdapterRv         : "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:${Versions.bindingAdapter}",
             bindingAdapterVp2        : "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-viewpager2:${Versions.bindingAdapter}",
 
-            xxPermissions            : 'com.github.getActivity:XXPermissions:16.5',
+            xxPermissions            : 'com.github.getActivity:XXPermissions:16.6',
 
 
             // 内部加载中
